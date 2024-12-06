@@ -1,4 +1,4 @@
-package com.bruno13palhano.takeme.ui.shared
+package com.bruno13palhano.takeme.ui.shared.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
