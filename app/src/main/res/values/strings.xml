@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">TakeMe</string>
+    <string name="driver_picker">Driver Picker</string>
+    <string name="travel_history">Travel History</string>
+    <string name="search_driver">Search driver</string>
+    <string name="navigate_to_travel_history">Navigate to travel history</string>
+    <string name="navigate_to_home">Navigate to home</string>
+    <string name="navigate_back">Navigate back</string>
+    <string name="customer_id">Customer id</string>
+    <string name="customer_id_placeholder">Enter customer id</string>
+    <string name="origin">Origin</string>
+    <string name="origin_placeholder">Enter origin</string>
+    <string name="destination">Destination</string>
+    <string name="destination_placeholder">Enter destination</string>
+    <string name="invalid_field">Fill missing fields</string>
 </resources>
