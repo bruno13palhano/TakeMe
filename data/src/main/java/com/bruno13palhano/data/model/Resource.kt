@@ -13,3 +13,23 @@ sealed class Resource<T>(
         errorResponse
     )
 }
+
+/**
+ * Convert a internal [Resource] to external [Resource] and vice versa.
+ *
+ *
+ * @param data The data in the proper format
+ *
+ * @return The converted [Resource]
+ */
+internal fun <T, R> Resource<T>.convert(data: R): Resource<R> {
+    return when (this) {
+        is Resource.Success -> { Resource.Success(data = data) }
+
+        is Resource.Error -> { Resource.Error(message = this.message ?: "") }
+
+        is Resource.ServerResponseError -> {
+            Resource.ServerResponseError(errorResponse = this.remoteErrorResponse)
+        }
+    }
+}
