@@ -14,6 +14,6 @@ internal data class RideEstimateEntity(
     val origin: Coordinates?,
     val destination: Coordinates?,
     val distance: Double?,
-    val duration: Long?,
+    val duration: String?,
     val drivers: List<Driver>?
 )
