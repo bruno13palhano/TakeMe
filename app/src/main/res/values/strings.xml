@@ -13,4 +13,11 @@
     <string name="destination">Destination</string>
     <string name="destination_placeholder">Enter destination</string>
     <string name="invalid_field">Fill missing fields</string>
+    <string name="choose">Choose</string>
+    <string name="ride_title_tag">From %s to %s</string>
+    <string name="vehicle_tag">Vehicle: %s</string>
+    <string name="rating_tag">Rating: %s</string>
+    <string name="ride_value_tag">R$ %.2f</string>
+    <string name="distance_tag">%.2f Km</string>
+    <string name="duration_tag">Duration: %s</string>
 </resources>
