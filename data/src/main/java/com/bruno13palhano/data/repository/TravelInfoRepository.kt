@@ -1,6 +1,9 @@
 package com.bruno13palhano.data.repository
 
+import com.bruno13palhano.data.model.ConfirmRide
+import com.bruno13palhano.data.model.RequestConfirmRide
 import com.bruno13palhano.data.model.Resource
+import com.bruno13palhano.data.model.Ride
 import com.bruno13palhano.data.model.RideEstimate
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +15,10 @@ interface TravelInfoRepository {
         origin: String?,
         destination: String?
     ): Resource<RideEstimate>
+
+    suspend fun confirmRide(confirmRide: RequestConfirmRide): Resource<ConfirmRide>
+
+    suspend fun getCustomerRides(customerId: String, driverId: Long): Resource<List<Ride>>
 
     fun getLastRideEstimate(): Flow<RideEstimate?>
 }
