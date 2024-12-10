@@ -1,7 +1,7 @@
 package com.bruno13palhano.data.di
 
-import com.bruno13palhano.data.remote.datasource.TravelInfoRemote
-import com.bruno13palhano.data.remote.datasource.TravelInfoRemoteImpl
+import com.bruno13palhano.data.remote.datasource.RemoteDataSource
+import com.bruno13palhano.data.remote.datasource.RemoteDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -19,5 +19,5 @@ internal abstract class RemoteModule {
     @TravelInfoRemoteDataSource
     @Binds
     @Singleton
-    abstract fun bindRemote(remote: TravelInfoRemoteImpl): TravelInfoRemote
+    abstract fun bindRemote(remote: RemoteDataSourceImpl): RemoteDataSource
 }
