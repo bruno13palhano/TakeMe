@@ -9,7 +9,7 @@ import com.bruno13palhano.data.local.model.RideEstimateEntity
 import com.bruno13palhano.data.model.ConfirmRide
 import com.bruno13palhano.data.model.DriverInfo
 import com.bruno13palhano.data.model.RequestConfirmRide
-import com.bruno13palhano.data.remote.datasource.TravelInfoRemote
+import com.bruno13palhano.data.remote.datasource.RemoteDataSource
 import com.bruno13palhano.data.remote.model.DriverRequest
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.model.Ride
@@ -23,11 +23,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-internal class TravelInfoRepositoryImpl @Inject constructor(
+internal class RideEstimateRepositoryImpl @Inject constructor(
     @RideEstimateLocalDataSource private val rideEstimateData: RideEstimateLocal<RideEstimateEntity>,
     @DriverInfoLocalDataSource private val driverInfoData: DriveInfoLocal,
-    @TravelInfoRemoteDataSource private val remote: TravelInfoRemote
-) : TravelInfoRepository {
+    @TravelInfoRemoteDataSource private val remote: RemoteDataSource
+) : RideEstimateRepository {
     override suspend fun insertRideEstimate(rideEstimate: RideEstimate) {
         rideEstimateData.insert(rideEstimate = rideEstimate.asInternal())
     }
