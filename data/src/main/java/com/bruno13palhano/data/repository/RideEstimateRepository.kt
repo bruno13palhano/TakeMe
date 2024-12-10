@@ -1,6 +1,7 @@
 package com.bruno13palhano.data.repository
 
 import com.bruno13palhano.data.model.ConfirmRide
+import com.bruno13palhano.data.model.DriverInfo
 import com.bruno13palhano.data.model.RequestConfirmRide
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.model.Ride
@@ -18,7 +19,15 @@ interface TravelInfoRepository {
 
     suspend fun confirmRide(confirmRide: RequestConfirmRide): Resource<ConfirmRide>
 
-    suspend fun getCustomerRides(customerId: String, driverId: Long): Resource<List<Ride>>
+    suspend fun getCustomerRides(
+        customerId: String,
+        driverId: Long,
+        driverName: String
+    ): Resource<List<Ride>>
 
     fun getLastRideEstimate(): Flow<RideEstimate?>
+
+    suspend fun insertDriverInfo(driverInfo: DriverInfo)
+
+    fun getAllDriverInfo(): Flow<List<DriverInfo>>
 }
