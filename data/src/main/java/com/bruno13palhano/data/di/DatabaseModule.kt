@@ -3,6 +3,7 @@ package com.bruno13palhano.data.di
 import android.content.Context
 import androidx.room.Room
 import com.bruno13palhano.data.local.database.TakeMeDatabase
+import com.bruno13palhano.data.local.datasource.DriverInfoDao
 import com.bruno13palhano.data.local.datasource.RideEstimateDao
 import dagger.Module
 import dagger.Provides
@@ -17,6 +18,10 @@ internal object DatabaseModule {
     @Provides
     @Singleton
     fun provideRideEstimateDao(database: TakeMeDatabase): RideEstimateDao = database.rideEstimateDao
+
+    @Provides
+    @Singleton
+    fun provideDriverInfoDao(database: TakeMeDatabase): DriverInfoDao = database.driverInfoDao
 
     @Provides
     @Singleton
