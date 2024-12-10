@@ -15,9 +15,9 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Response
 import javax.inject.Inject
 
-internal class TravelInfoRemoteImpl @Inject constructor(
+internal class RemoteDataSourceImpl @Inject constructor(
     private val service: Service
-) : TravelInfoRemote {
+) : RemoteDataSource {
     override suspend fun searchDriver(driverRequest: DriverRequest): Resource<RideEstimateResponse> {
         val response = service.findDriver(request = driverRequest)
 

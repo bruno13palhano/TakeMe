@@ -7,7 +7,7 @@ import com.bruno13palhano.data.remote.model.ConfirmRideRequest
 import com.bruno13palhano.data.remote.model.ConfirmRideResponse
 import com.bruno13palhano.data.remote.model.RidesResponse
 
-internal interface TravelInfoRemote {
+internal interface RemoteDataSource {
     suspend fun searchDriver(driverRequest: DriverRequest): Resource<RideEstimateResponse>
 
     suspend fun confirmRide(confirmRideRequest: ConfirmRideRequest): Resource<ConfirmRideResponse>
