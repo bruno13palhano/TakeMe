@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 internal abstract class BaseViewModel<State: ViewState, Action: ViewAction, Event: ViewEvent, SideEffect: ViewSideEffect>(
     initialState: State,
-    protected val actionProcessor: ActionProcessor<Action, Event>,
     protected val reducer: Reducer<State, Event, SideEffect>
 ) : ViewModel() {
     private var _state: MutableStateFlow<State> = MutableStateFlow(initialState)
@@ -21,9 +20,7 @@ internal abstract class BaseViewModel<State: ViewState, Action: ViewAction, Even
     private val _sideEffect = Channel<SideEffect>(capacity = Channel.CONFLATED)
     val sideEffect = _sideEffect.receiveAsFlow()
 
-    fun onAction(action: Action) {
-        sendEvent(actionProcessor.process(action))
-    }
+    abstract fun onAction(action: Action)
 
     protected fun sendEvent(event: Event) {
         val (newState, sideEffect) = reducer.reduce(_state.value, event)
@@ -31,11 +28,7 @@ internal abstract class BaseViewModel<State: ViewState, Action: ViewAction, Even
         _state.tryEmit(newState)
 
         sideEffect?.let {
-            sendSideEffect(it)
+            _sideEffect.trySend(sideEffect)
         }
-    }
-
-    fun sendSideEffect(sideEffect: SideEffect) {
-        _sideEffect.trySend(sideEffect)
     }
 }
