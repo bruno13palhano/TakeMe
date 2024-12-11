@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerRoute
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeRoute
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryRoute
@@ -22,12 +23,27 @@ internal fun MainNavGraph(
     ) {
         composable<MainRoutes.Home> {
             HomeRoute(
-                navigateToDriverPicker = { navController.navigate(MainRoutes.DriverPicker) }
+                navigateToDriverPicker = { customerId, origin, destination ->
+                    navController.navigate(
+                        route = MainRoutes.DriverPicker(
+                            customerId = customerId,
+                            origin = origin,
+                            destination = destination
+                        )
+                    )
+                }
             )
         }
 
         composable<MainRoutes.DriverPicker> {
+            val customerId = it.toRoute<MainRoutes.DriverPicker>().customerId
+            val origin = it.toRoute<MainRoutes.DriverPicker>().origin
+            val destination = it.toRoute<MainRoutes.DriverPicker>().destination
+
             DriverPickerRoute(
+                customerId = customerId,
+                origin = origin,
+                destination = destination,
                 navigateToTravelHistory = { navController.navigate(MainRoutes.TravelHistory) },
                 navigateBack = { navController.popBackStack() }
             )
@@ -54,7 +70,11 @@ internal sealed interface MainRoutes {
     data object Home : MainRoutes
 
     @Serializable
-    data object DriverPicker : MainRoutes
+    data class DriverPicker(
+        val customerId: String,
+        val origin: String,
+        val destination: String
+    ) : MainRoutes
 
     @Serializable
     data object TravelHistory : MainRoutes
