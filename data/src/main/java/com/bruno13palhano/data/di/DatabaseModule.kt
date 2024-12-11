@@ -33,6 +33,7 @@ internal object DatabaseModule {
             TakeMeDatabase::class.java,
             "take_me_db"
         )
+            .createFromAsset("take_me_db.db")
             .fallbackToDestructiveMigration()
             .build()
     }
