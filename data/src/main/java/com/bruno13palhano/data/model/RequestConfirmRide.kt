@@ -1,6 +1,6 @@
 package com.bruno13palhano.data.model
 
-import com.bruno13palhano.data.remote.model.ConfirmRideRequest
+import com.bruno13palhano.data.remote.model.request.ConfirmRideRequest
 
 data class RequestConfirmRide(
     val customerId: String,

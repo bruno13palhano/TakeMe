@@ -1,6 +1,6 @@
 package com.bruno13palhano.data.model
 
-import com.bruno13palhano.data.remote.model.RemoteErrorResponse
+import com.bruno13palhano.data.remote.model.response.RemoteErrorResponse
 
 data class ErrorResponse(
     val errorCode: String?,
@@ -8,11 +8,6 @@ data class ErrorResponse(
 )
 
 internal fun RemoteErrorResponse.asExternal() = ErrorResponse(
-    errorCode = errorCode,
-    errorDescription = errorDescription
-)
-
-internal fun ErrorResponse.asInternal() = RemoteErrorResponse(
     errorCode = errorCode,
     errorDescription = errorDescription
 )

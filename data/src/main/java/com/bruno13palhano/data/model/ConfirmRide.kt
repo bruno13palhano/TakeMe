@@ -1,6 +1,6 @@
 package com.bruno13palhano.data.model
 
-import com.bruno13palhano.data.remote.model.ConfirmRideResponse
+import com.bruno13palhano.data.remote.model.response.ConfirmRideResponse
 
 data class ConfirmRide(
     val success: Boolean
