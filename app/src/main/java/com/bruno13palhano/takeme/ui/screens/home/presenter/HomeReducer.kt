@@ -8,27 +8,53 @@ internal class HomeReducer : Reducer<HomeState, HomeEvent, HomeSideEffect> {
         event: HomeEvent
     ): Pair<HomeState, HomeSideEffect?> {
         return when (event) {
-            is HomeEvent.Loading -> previousState.copy(isLoading = true) to null
+            is HomeEvent.Search -> search(previousState = previousState)
 
-            is HomeEvent.NavigateToDriverPicker -> {
-                navigateToDriverPicker(previousState = previousState)
+            is HomeEvent.Error -> {
+                previousState.copy(
+                    isSearch = false
+                ) to HomeSideEffect.ShowError(message = event.message)
             }
+
+            is HomeEvent.NoDriverFound -> {
+                previousState.copy(isSearch = false) to HomeSideEffect.ShowNoDriverFound
+            }
+
+            is HomeEvent.DismissKeyboard -> previousState to HomeSideEffect.DismissKeyboard
+
+            is HomeEvent.NavigateToDriverPicker -> navigateToDriverPicker(
+                previousState = previousState
+            )
+        }
+    }
+
+    private fun search(previousState: HomeState): Pair<HomeState, HomeSideEffect?> {
+        return if (previousState.homeInputFields.isValid()) {
+            previousState.copy(
+                isSearch = true,
+                isFieldInvalid = false
+            ) to null
+        } else {
+            previousState.copy(
+                isSearch = false,
+                isFieldInvalid = true
+            ) to HomeSideEffect.InvalidFieldError
         }
     }
 
     private fun navigateToDriverPicker(
         previousState: HomeState
     ): Pair<HomeState, HomeSideEffect?> {
-        return if (previousState.homeInputFields.isValid()) {
-            previousState.copy(
-                isLoading = false,
-                isFieldInvalid = false
-            ) to HomeSideEffect.NavigateToDriverPicker
+        return if (previousState.isFieldInvalid) {
+            previousState to null
         } else {
             previousState.copy(
-                isLoading = false,
-                isFieldInvalid = true
-            ) to HomeSideEffect.InvalidFieldError
+                isSearch = false,
+            ) to HomeSideEffect.NavigateToDriverPicker(
+                customerId = previousState.homeInputFields.customerId,
+                origin = previousState.homeInputFields.origin,
+                destination = previousState.homeInputFields.destination
+            )
         }
     }
 }

@@ -25,12 +25,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bruno13palhano.takeme.R
 import com.bruno13palhano.takeme.ui.screens.home.viewmodel.HomeViewModel
+import com.bruno13palhano.takeme.ui.shared.base.clearFocusOnKeyboardDismiss
+import com.bruno13palhano.takeme.ui.shared.base.clickableWithoutRipple
 import com.bruno13palhano.takeme.ui.shared.base.rememberFlowWithLifecycle
 import com.bruno13palhano.takeme.ui.shared.components.CircularProgress
 import com.bruno13palhano.takeme.ui.shared.components.CustomTextField
@@ -38,19 +42,41 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun HomeRoute(
-    navigateToDriverPicker: () -> Unit,
+    navigateToDriverPicker: (customerId: String, origin: String, destination: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
 
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val invalidFieldMessage = stringResource(id = R.string.invalid_field)
+    val noDriverFound = stringResource(id = R.string.no_driver_found)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(sideEffect) {
         sideEffect.collect {
             when (it) {
+                is HomeSideEffect.ShowError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = it.message ?: "",
+                            withDismissAction = true
+                        )
+                    }
+                }
+
+                is HomeSideEffect.ShowNoDriverFound -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = noDriverFound,
+                            withDismissAction = true
+                        )
+                    }
+                }
+
                 is HomeSideEffect.InvalidFieldError -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
@@ -60,7 +86,14 @@ internal fun HomeRoute(
                     }
                 }
 
-                is HomeSideEffect.NavigateToDriverPicker -> navigateToDriverPicker()
+                is HomeSideEffect.DismissKeyboard -> {
+                    keyboardController?.hide()
+                    focusManager.clearFocus(force = true)
+                }
+
+                is HomeSideEffect.NavigateToDriverPicker -> {
+                    navigateToDriverPicker(it.customerId, it.origin, it.destination)
+                }
             }
         }
     }
@@ -81,12 +114,18 @@ private fun HomeContent(
     onAction: (action: HomeAction) -> Unit
 ) {
     Scaffold(
-        modifier = modifier.consumeWindowInsets(WindowInsets.safeDrawing),
-        topBar = { TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }) },
+        modifier = modifier
+            .clickableWithoutRipple { onAction(HomeAction.OnDismissKeyboard) }
+            .consumeWindowInsets(WindowInsets.safeDrawing),
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.app_name)) }
+            )
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            if (!state.isLoading) {
-                FloatingActionButton(onClick = { onAction(HomeAction.NavigateToDriverPicker) }) {
+            if (!state.isSearch) {
+                FloatingActionButton(onClick = { onAction(HomeAction.OnNavigateToDriverPicker) }) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = stringResource(id = R.string.search_driver)
@@ -95,7 +134,7 @@ private fun HomeContent(
             }
         }
     ) {
-        if (state.isLoading) {
+        if (state.isSearch) {
             CircularProgress(
                 modifier = Modifier
                     .consumeWindowInsets(it)
@@ -110,6 +149,7 @@ private fun HomeContent(
             ) {
                 CustomTextField(
                     modifier = Modifier
+                        .clearFocusOnKeyboardDismiss()
                         .padding(horizontal = 8.dp)
                         .fillMaxWidth(),
                     value = state.homeInputFields.customerId,
@@ -121,6 +161,7 @@ private fun HomeContent(
 
                 CustomTextField(
                     modifier = Modifier
+                        .clearFocusOnKeyboardDismiss()
                         .padding(horizontal = 8.dp)
                         .fillMaxWidth(),
                     value = state.homeInputFields.origin,
@@ -132,6 +173,7 @@ private fun HomeContent(
 
                 CustomTextField(
                     modifier = Modifier
+                        .clearFocusOnKeyboardDismiss()
                         .padding(horizontal = 8.dp)
                         .fillMaxWidth(),
                     value = state.homeInputFields.destination,

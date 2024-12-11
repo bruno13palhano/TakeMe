@@ -8,13 +8,13 @@ import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class HomeState(
-    val isLoading: Boolean,
+    val isSearch: Boolean,
     val isFieldInvalid: Boolean,
     val homeInputFields: HomeInputFields
 ) : ViewState {
     companion object {
         val initialState = HomeState(
-            isLoading = false,
+            isSearch = false,
             isFieldInvalid = false,
             homeInputFields = HomeInputFields()
         )
@@ -23,17 +23,28 @@ internal data class HomeState(
 
 @Immutable
 internal sealed interface HomeEvent : ViewEvent {
-    data object Loading : HomeEvent
+    data object Search : HomeEvent
+    data class Error(val message: String?) : HomeEvent
+    data object NoDriverFound : HomeEvent
+    data object DismissKeyboard : HomeEvent
     data object NavigateToDriverPicker : HomeEvent
 }
 
 @Immutable
 internal sealed interface HomeSideEffect : ViewSideEffect {
+    data class ShowError(val message: String?) : HomeSideEffect
+    data object ShowNoDriverFound : HomeSideEffect
     data object InvalidFieldError : HomeSideEffect
-    data object NavigateToDriverPicker : HomeSideEffect
+    data object DismissKeyboard : HomeSideEffect
+    data class NavigateToDriverPicker(
+        val customerId: String,
+        val origin: String,
+        val destination: String
+    ) : HomeSideEffect
 }
 
 @Immutable
 internal sealed interface HomeAction : ViewAction {
-    data object NavigateToDriverPicker : HomeAction
+    data object OnDismissKeyboard : HomeAction
+    data object OnNavigateToDriverPicker: HomeAction
 }
