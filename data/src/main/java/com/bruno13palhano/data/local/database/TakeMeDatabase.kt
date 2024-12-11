@@ -19,7 +19,8 @@ import com.bruno13palhano.data.local.model.RideEstimateEntity
 @TypeConverters(
     value = [
         CoordinatesConverter::class,
-        DriverListConverter::class
+        DriverListConverter::class,
+        RouteConverter::class
     ]
 )
 internal abstract class TakeMeDatabase : RoomDatabase() {
