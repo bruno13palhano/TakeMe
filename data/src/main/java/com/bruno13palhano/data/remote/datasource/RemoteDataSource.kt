@@ -1,11 +1,11 @@
 package com.bruno13palhano.data.remote.datasource
 
-import com.bruno13palhano.data.remote.model.DriverRequest
-import com.bruno13palhano.data.remote.model.RideEstimateResponse
+import com.bruno13palhano.data.remote.model.request.DriverRequest
+import com.bruno13palhano.data.remote.model.response.RideEstimateResponse
 import com.bruno13palhano.data.model.Resource
-import com.bruno13palhano.data.remote.model.ConfirmRideRequest
-import com.bruno13palhano.data.remote.model.ConfirmRideResponse
-import com.bruno13palhano.data.remote.model.RidesResponse
+import com.bruno13palhano.data.remote.model.request.ConfirmRideRequest
+import com.bruno13palhano.data.remote.model.response.ConfirmRideResponse
+import com.bruno13palhano.data.remote.model.response.RidesResponse
 
 internal interface RemoteDataSource {
     suspend fun searchDriver(driverRequest: DriverRequest): Resource<RideEstimateResponse>
