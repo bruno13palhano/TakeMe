@@ -15,6 +15,4 @@ data class Route(
             steps = emptyList()
         )
     }
-
-    fun isNotEmpty() = this != empty
 }
