@@ -6,5 +6,7 @@ import kotlinx.coroutines.flow.Flow
 internal interface DriveInfoLocal {
     suspend fun insert(driverInfo: DriverInfoEntity)
 
+    suspend fun getDriverInfo(id: Long): DriverInfoEntity?
+
     fun getAll(): Flow<List<DriverInfoEntity>>
 }

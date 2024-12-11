@@ -12,6 +12,9 @@ internal interface DriverInfoDao : DriveInfoLocal {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     override suspend fun insert(driverInfo: DriverInfoEntity)
 
+    @Query("SELECT * FROM driver_info WHERE id = :id")
+    override suspend fun getDriverInfo(id: Long): DriverInfoEntity?
+
     @Query("SELECT * FROM driver_info")
     override fun getAll(): Flow<List<DriverInfoEntity>>
 }
