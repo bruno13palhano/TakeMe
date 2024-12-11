@@ -18,7 +18,6 @@ import com.bruno13palhano.data.local.model.RideEstimateEntity
 )
 @TypeConverters(
     value = [
-        CoordinatesConverter::class,
         DriverListConverter::class,
         RouteConverter::class
     ]
