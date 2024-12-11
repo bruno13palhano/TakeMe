@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.bruno13palhano.data.model.Coordinates
 import com.bruno13palhano.data.model.Driver
+import com.bruno13palhano.data.model.Route
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,5 +16,6 @@ internal data class RideEstimateEntity(
     val destination: Coordinates?,
     val distance: Double?,
     val duration: String?,
-    val drivers: List<Driver>?
+    val drivers: List<Driver>?,
+    val route: Route?
 )
