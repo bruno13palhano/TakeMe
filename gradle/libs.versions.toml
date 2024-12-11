@@ -22,6 +22,7 @@ ktlintVersion = "12.1.1"
 roomVersion = "2.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
+mapsVersion = "6.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +57,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVer
 room-coroutines = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+maps = { module = "com.google.maps.android:maps-compose", version.ref = "mapsVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
