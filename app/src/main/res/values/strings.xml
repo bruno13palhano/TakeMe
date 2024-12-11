@@ -3,6 +3,7 @@
     <string name="driver_picker">Driver Picker</string>
     <string name="travel_history">Travel History</string>
     <string name="search_driver">Search driver</string>
+    <string name="search">Search</string>
     <string name="navigate_to_travel_history">Navigate to travel history</string>
     <string name="navigate_to_home">Navigate to home</string>
     <string name="navigate_back">Navigate back</string>
@@ -13,8 +14,14 @@
     <string name="destination">Destination</string>
     <string name="destination_placeholder">Enter destination</string>
     <string name="invalid_field">Fill missing fields</string>
+    <string name="customer_id_required">Customer id is required</string>
+    <string name="no_driver_found">No driver found</string>
     <string name="choose">Choose</string>
     <string name="ride_title_tag">From %s to %s</string>
+    <string name="ride_description_tag">
+        The ride lasted %s and covered a distance of %.2fKm, coasting R$ %.2f. The driver was %s.
+    </string>
+    <string name="ride_foot_tag">Date of ride: %s</string>
     <string name="vehicle_tag">Vehicle: %s</string>
     <string name="rating_tag">Rating: %s</string>
     <string name="ride_value_tag">R$ %.2f</string>
