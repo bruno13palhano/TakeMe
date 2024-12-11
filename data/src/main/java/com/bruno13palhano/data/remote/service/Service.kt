@@ -1,10 +1,10 @@
 package com.bruno13palhano.data.remote.service
 
-import com.bruno13palhano.data.remote.model.ConfirmRideRequest
-import com.bruno13palhano.data.remote.model.ConfirmRideResponse
-import com.bruno13palhano.data.remote.model.RideEstimateResponse
-import com.bruno13palhano.data.remote.model.DriverRequest
-import com.bruno13palhano.data.remote.model.RidesResponse
+import com.bruno13palhano.data.remote.model.request.ConfirmRideRequest
+import com.bruno13palhano.data.remote.model.response.ConfirmRideResponse
+import com.bruno13palhano.data.remote.model.response.RideEstimateResponse
+import com.bruno13palhano.data.remote.model.request.DriverRequest
+import com.bruno13palhano.data.remote.model.response.RidesResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

@@ -5,7 +5,7 @@ import com.bruno13palhano.data.di.TravelInfoRemoteDataSource
 import com.bruno13palhano.data.local.datasource.RideEstimateLocal
 import com.bruno13palhano.data.local.model.RideEstimateEntity
 import com.bruno13palhano.data.remote.datasource.RemoteDataSource
-import com.bruno13palhano.data.remote.model.DriverRequest
+import com.bruno13palhano.data.remote.model.request.DriverRequest
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.model.RideEstimate
 import com.bruno13palhano.data.model.asExternal
