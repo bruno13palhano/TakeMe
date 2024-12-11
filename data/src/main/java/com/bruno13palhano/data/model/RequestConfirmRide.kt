@@ -19,6 +19,6 @@ internal fun RequestConfirmRide.asInternalRequest() = ConfirmRideRequest(
     destination = destination,
     distance = distance,
     duration = duration,
-    driver = DriverInfo(id = driverId, name = driverName),
+    driver = DriverInfo(id = driverId, name = driverName, minKm = 0f),
     value = value
 )

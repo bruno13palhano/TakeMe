@@ -9,5 +9,6 @@ import kotlinx.serialization.Serializable
 data class DriverInfoEntity(
     @PrimaryKey
     val id: Long,
-    val name: String
+    val name: String,
+    val minKm: Float
 )
