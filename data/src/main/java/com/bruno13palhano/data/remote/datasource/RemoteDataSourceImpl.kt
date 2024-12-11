@@ -19,13 +19,21 @@ internal class RemoteDataSourceImpl @Inject constructor(
     private val service: Service
 ) : RemoteDataSource {
     override suspend fun searchDriver(driverRequest: DriverRequest): Resource<RideEstimateResponse> {
-        val response = service.findDriver(request = driverRequest)
+        val response = try {
+            service.findDriver(request = driverRequest)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
 
         return getResponse(response = response)
     }
 
     override suspend fun confirmRide(confirmRideRequest: ConfirmRideRequest): Resource<ConfirmRideResponse> {
-        val response = service.confirmRide(request = confirmRideRequest)
+        val response = try {
+            service.confirmRide(request = confirmRideRequest)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
 
         return getResponse(response = response)
     }
@@ -34,13 +42,21 @@ internal class RemoteDataSourceImpl @Inject constructor(
         customerId: String,
         driverId: Long
     ): Resource<RidesResponse> {
-        val response = service.getCustomerRides(customerId = customerId, driverId = driverId)
+        val response = try {
+            service.getCustomerRides(customerId = customerId, driverId = driverId)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
 
         return getResponse(response = response)
     }
 
     override suspend fun getRides(customerId: String, driverId: Long): Resource<RidesResponse> {
-        val response = service.getCustomerRides(customerId = customerId, driverId = driverId)
+        val response = try {
+            service.getCustomerRides(customerId = customerId, driverId = driverId)
+        } catch (e: Exception) {
+            return Resource.Error(message = e.message.toString())
+        }
 
         return getResponse(response = response)
     }
@@ -48,16 +64,12 @@ internal class RemoteDataSourceImpl @Inject constructor(
     private fun <T> getResponse(response: Response<T>): Resource<T> {
         val result = response.body()
 
-        return try {
-            if (response.isSuccessful && result != null) {
-                Resource.Success(data = result)
-            } else {
-                Resource.ServerResponseError(
-                    errorResponse = getInvalidResponse(response = response.errorBody()!!.string())
-                )
-            }
-        } catch (e: Exception) {
-            Resource.Error(message = e.message.toString())
+        return if (response.isSuccessful && result != null) {
+            Resource.Success(data = result)
+        } else {
+            Resource.ServerResponseError(
+                errorResponse = getInvalidResponse(response = response.errorBody()!!.string())
+            )
         }
     }
 
