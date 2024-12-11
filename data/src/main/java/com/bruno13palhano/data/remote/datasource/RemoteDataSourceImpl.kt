@@ -12,6 +12,8 @@ import com.bruno13palhano.data.remote.model.response.RidesResponse
 import com.bruno13palhano.data.remote.service.Service
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okio.IOException
+import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -21,7 +23,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun searchDriver(driverRequest: DriverRequest): Resource<RideEstimateResponse> {
         val response = try {
             service.findDriver(request = driverRequest)
-        } catch (e: Exception) {
+        } catch (e: HttpException) {
+            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+        } catch (e: IOException) {
+            return Resource.Error(message = "No Internet Connection")
+        }catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }
 
@@ -31,7 +37,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun confirmRide(confirmRideRequest: ConfirmRideRequest): Resource<ConfirmRideResponse> {
         val response = try {
             service.confirmRide(request = confirmRideRequest)
-        } catch (e: Exception) {
+        } catch (e: HttpException) {
+            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+        } catch (e: IOException) {
+            return Resource.Error(message = "No Internet Connection")
+        }catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }
 
@@ -44,7 +54,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
     ): Resource<RidesResponse> {
         val response = try {
             service.getCustomerRides(customerId = customerId, driverId = driverId)
-        } catch (e: Exception) {
+        } catch (e: HttpException) {
+            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+        } catch (e: IOException) {
+            return Resource.Error(message = "No Internet Connection")
+        }catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }
 
@@ -54,7 +68,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun getRides(customerId: String, driverId: Long): Resource<RidesResponse> {
         val response = try {
             service.getCustomerRides(customerId = customerId, driverId = driverId)
-        } catch (e: Exception) {
+        } catch (e: HttpException) {
+            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+        } catch (e: IOException) {
+            return Resource.Error(message = "No Internet Connection")
+        }catch (e: Exception) {
             return Resource.Error(message = e.message.toString())
         }
 
