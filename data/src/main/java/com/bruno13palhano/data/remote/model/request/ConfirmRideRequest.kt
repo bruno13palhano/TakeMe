@@ -1,4 +1,4 @@
-package com.bruno13palhano.data.remote.model
+package com.bruno13palhano.data.remote.model.request
 
 import com.bruno13palhano.data.model.DriverInfo
 import com.squareup.moshi.Json

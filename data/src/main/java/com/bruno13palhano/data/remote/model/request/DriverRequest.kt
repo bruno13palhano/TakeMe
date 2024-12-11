@@ -1,4 +1,4 @@
-package com.bruno13palhano.data.remote.model
+package com.bruno13palhano.data.remote.model.request
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

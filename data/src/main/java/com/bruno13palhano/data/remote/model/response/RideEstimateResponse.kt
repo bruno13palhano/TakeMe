@@ -1,4 +1,4 @@
-package com.bruno13palhano.data.remote.model
+package com.bruno13palhano.data.remote.model.response
 
 import com.bruno13palhano.data.model.Coordinates
 import com.bruno13palhano.data.model.Driver
@@ -11,5 +11,6 @@ internal data class RideEstimateResponse(
     @Json(name = "destination") val destination: Coordinates?,
     @Json(name = "distance") val distance: Double?,
     @Json(name = "duration") val duration: String?,
-    @Json(name = "options") val drivers: List<Driver>?
+    @Json(name = "options") val drivers: List<Driver>?,
+    @Json(name = "routeResponse") val routeResponse: RouteResponse?
 )
