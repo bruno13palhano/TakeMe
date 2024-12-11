@@ -4,8 +4,6 @@ import com.bruno13palhano.data.local.model.RideEstimateEntity
 import com.bruno13palhano.data.remote.model.response.RideEstimateResponse
 
 data class RideEstimate(
-    val origin: Coordinates,
-    val destination: Coordinates,
     val distance: Double,
     val duration: String,
     val drivers: List<Driver>,
@@ -13,8 +11,6 @@ data class RideEstimate(
 ) {
     companion object {
         val empty = RideEstimate(
-            origin = Coordinates.empty,
-            destination = Coordinates.empty,
             distance = 0.0,
             duration = "0",
             drivers = emptyList(),
@@ -27,8 +23,6 @@ data class RideEstimate(
 
 internal fun RideEstimate.asInternal() = RideEstimateEntity(
     id = 1L,
-    origin = origin,
-    destination = destination,
     distance = distance,
     duration = duration,
     drivers = drivers,
@@ -36,8 +30,6 @@ internal fun RideEstimate.asInternal() = RideEstimateEntity(
 )
 
 internal fun RideEstimateEntity.asExternal() = RideEstimate(
-    origin = origin ?: Coordinates.empty,
-    destination = destination ?: Coordinates.empty,
     distance = distance ?: 0.0,
     duration = duration ?: "",
     drivers = drivers ?: emptyList(),
@@ -45,8 +37,6 @@ internal fun RideEstimateEntity.asExternal() = RideEstimate(
 )
 
 internal fun RideEstimateResponse.asExternalResponse() = RideEstimate(
-    origin = origin ?: Coordinates.empty,
-    destination = destination ?: Coordinates.empty,
     distance = distance ?: 0.0,
     duration = duration ?: "",
     drivers = drivers ?: emptyList(),
