@@ -45,16 +45,16 @@ internal class HomeReducer : Reducer<HomeState, HomeEvent, HomeSideEffect> {
     private fun navigateToDriverPicker(
         previousState: HomeState
     ): Pair<HomeState, HomeSideEffect?> {
-        return if (previousState.isFieldInvalid) {
-            previousState to null
+        val sideEffect = if (previousState.isFieldInvalid) {
+            null
         } else {
-            previousState.copy(
-                isSearch = false,
-            ) to HomeSideEffect.NavigateToDriverPicker(
+            HomeSideEffect.NavigateToDriverPicker(
                 customerId = previousState.homeInputFields.customerId,
                 origin = previousState.homeInputFields.origin,
                 destination = previousState.homeInputFields.destination
             )
         }
+
+        return previousState to sideEffect
     }
 }
