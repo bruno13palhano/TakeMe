@@ -52,17 +52,7 @@ internal class HomeViewModel @Inject constructor(
 
     private suspend fun processResponse(response: Resource<RideEstimate>) {
         when (response) {
-            is Resource.Success -> {
-                response.data?.let { rideEstimate ->
-                    if (rideEstimate.isNotEmpty()) {
-                        repository.insertRideEstimate(rideEstimate = rideEstimate)
-
-                        sendEvent(event = HomeEvent.NavigateToDriverPicker)
-                    } else {
-                        sendEvent(event = HomeEvent.Error(message = "No driver found"))
-                    }
-                }
-            }
+            is Resource.Success -> successResponse(response = response)
 
             is Resource.ServerResponseError -> {
                 sendEvent(
@@ -73,6 +63,18 @@ internal class HomeViewModel @Inject constructor(
             }
 
             is Resource.Error -> sendEvent(event = HomeEvent.Error(message = response.message))
+        }
+    }
+
+    private suspend fun successResponse(response: Resource<RideEstimate>) {
+        response.data?.let { rideEstimate ->
+            if (rideEstimate.isNotEmpty()) {
+                repository.insertRideEstimate(rideEstimate = rideEstimate)
+
+                sendEvent(event = HomeEvent.NavigateToDriverPicker)
+            } else {
+                sendEvent(event = HomeEvent.NoDriverFound)
+            }
         }
     }
 }
