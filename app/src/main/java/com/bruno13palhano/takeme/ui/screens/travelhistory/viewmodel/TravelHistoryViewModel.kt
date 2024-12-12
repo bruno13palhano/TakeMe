@@ -32,10 +32,6 @@ internal class TravelHistoryViewModel @Inject constructor(
 ) {
     override fun onAction(action: TravelHistoryAction) {
         when (action) {
-            is TravelHistoryAction.OnLoading -> {
-                sendEvent(event = TravelHistoryEvent.Loading(isLoading = action.isLoading))
-            }
-
             is TravelHistoryAction.OnExpandSelector -> {
                 sendEvent(
                     event = TravelHistoryEvent.ExpandSelector(
@@ -68,7 +64,9 @@ internal class TravelHistoryViewModel @Inject constructor(
         viewModelScope.launch(SupervisorJob() + dispatcher) {
             driverInfoRepository.getAllDriverInfo().collect {
                 sendEvent(event = TravelHistoryEvent.GetDrivers(drivers = it))
-                sendEvent(event = TravelHistoryEvent.UpdateCurrentDriver(driver = it[0]))
+                it.firstOrNull()?.let { driver ->
+                    sendEvent(event = TravelHistoryEvent.UpdateCurrentDriver(driver = driver))
+                }
             }
         }
     }
