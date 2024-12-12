@@ -3,15 +3,12 @@ package com.bruno13palhano.takeme.ui.screens.driverpicker.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.bruno13palhano.data.di.ConfirmRideRep
 import com.bruno13palhano.data.di.Dispatcher
-import com.bruno13palhano.data.di.DriverInfoRep
 import com.bruno13palhano.data.di.RideEstimateRep
 import com.bruno13palhano.data.di.TakeMeDispatchers
 import com.bruno13palhano.data.model.ConfirmRide
-import com.bruno13palhano.data.model.DriverInfo
 import com.bruno13palhano.data.model.RequestConfirmRide
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.repository.ConfirmRideRepository
-import com.bruno13palhano.data.repository.DriverInfoRepository
 import com.bruno13palhano.data.repository.RideEstimateRepository
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerAction
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerEvent
@@ -30,7 +27,6 @@ import javax.inject.Inject
 internal class DriverPickerViewModel @Inject constructor(
     @RideEstimateRep private val rideEstimateRepository: RideEstimateRepository,
     @ConfirmRideRep private val confirmRideRepository: ConfirmRideRepository,
-    @DriverInfoRep private val driverInfoRepository: DriverInfoRepository,
     @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<DriverPickerState, DriverPickerAction, DriverPickerEvent, DriverPickerSideEffect>(
     initialState = DriverPickerState.initialState,
@@ -38,14 +34,6 @@ internal class DriverPickerViewModel @Inject constructor(
 ) {
     override fun onAction(action: DriverPickerAction) {
         when (action) {
-            is DriverPickerAction.OnLoading -> sendEvent(
-                event = DriverPickerEvent.Loading(isLoading = action.isLoading)
-            )
-
-            is DriverPickerAction.OnUpdateMapLoading -> sendEvent(
-                event = DriverPickerEvent.UpdateMapLoading(isMapLoading = action.isMapLoading)
-            )
-
             is DriverPickerAction.OnGetLastRideEstimate -> onGetLastRideEstimate()
 
             is DriverPickerAction.OnUpdateCustomerParams -> sendEvent(
@@ -115,29 +103,9 @@ internal class DriverPickerViewModel @Inject constructor(
         }
     }
 
-    private suspend fun processChooseDriverResponse(response: Resource<ConfirmRide>) {
+    private fun processChooseDriverResponse(response: Resource<ConfirmRide>) {
         when (response) {
-            is Resource.Success -> {
-                response.data?.let {
-                    if (it.success) {
-                        val driversInfo = state.value.rideEstimate.drivers.map { driver ->
-                            DriverInfo(
-                                id = driver.id,
-                                name = driver.name ?: ""
-                            )
-                        }
-                        driversInfo.forEach { driverInfo ->
-                            driverInfoRepository.insertDriverInfo(driverInfo = driverInfo)
-                        }
-
-                        sendEvent(event = DriverPickerEvent.NavigateToTravelHistory)
-                    } else {
-                        sendEvent(
-                            event = DriverPickerEvent.Error(message = response.message)
-                        )
-                    }
-                }
-            }
+            is Resource.Success -> successDriverResponse(response = response)
 
             is Resource.ServerResponseError -> {
                 sendEvent(
@@ -149,6 +117,18 @@ internal class DriverPickerViewModel @Inject constructor(
 
             is Resource.Error -> {
                 sendEvent(event = DriverPickerEvent.Error(message = response.message))
+            }
+        }
+    }
+
+    private fun successDriverResponse(response: Resource<ConfirmRide>) {
+        response.data?.let {
+            if (it.success) {
+                sendEvent(event = DriverPickerEvent.NavigateToTravelHistory)
+            } else {
+                sendEvent(
+                    event = DriverPickerEvent.Error(message = response.message)
+                )
             }
         }
     }
