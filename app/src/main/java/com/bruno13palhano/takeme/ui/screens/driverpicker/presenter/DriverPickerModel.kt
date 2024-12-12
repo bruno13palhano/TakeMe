@@ -36,8 +36,6 @@ internal data class DriverPickerState(
 
 @Immutable
 internal sealed interface DriverPickerEvent : ViewEvent {
-    data class Loading(val isLoading: Boolean) : DriverPickerEvent
-    data class UpdateMapLoading(val isMapLoading: Boolean) : DriverPickerEvent
     data class UpdateCustomerParams(
         val customerId: String,
         val origin: String,
@@ -63,8 +61,6 @@ internal sealed interface DriverPickerSideEffect : ViewSideEffect {
 
 @Immutable
 internal sealed interface DriverPickerAction : ViewAction {
-    data class OnLoading(val isLoading: Boolean) : DriverPickerAction
-    data class OnUpdateMapLoading(val isMapLoading: Boolean) : DriverPickerAction
     data class OnUpdateCustomerParams(
         val customerId: String,
         val origin: String,

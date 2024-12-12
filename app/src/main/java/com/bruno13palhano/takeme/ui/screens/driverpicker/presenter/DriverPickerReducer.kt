@@ -9,12 +9,6 @@ internal class DriverPickerReducer :
         event: DriverPickerEvent
     ): Pair<DriverPickerState, DriverPickerSideEffect?> {
         return when (event) {
-            is DriverPickerEvent.Loading -> previousState.copy(isLoading = event.isLoading) to null
-
-            is DriverPickerEvent.UpdateMapLoading -> {
-                previousState.copy(isMapLoading = event.isMapLoading) to null
-            }
-
             is DriverPickerEvent.UpdateCustomerParams -> {
                 previousState.copy(
                     customerId = event.customerId,
