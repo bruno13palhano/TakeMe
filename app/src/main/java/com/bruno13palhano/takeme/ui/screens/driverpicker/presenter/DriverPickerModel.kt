@@ -1,6 +1,7 @@
 package com.bruno13palhano.takeme.ui.screens.driverpicker.presenter
 
 import androidx.compose.runtime.Immutable
+import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.RideEstimate
 import com.bruno13palhano.takeme.ui.shared.base.ViewAction
 import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
@@ -9,6 +10,7 @@ import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class DriverPickerState(
+    val start: Boolean,
     val isLoading: Boolean,
     val isMapLoading: Boolean,
     val rideEstimate: RideEstimate,
@@ -21,6 +23,7 @@ internal data class DriverPickerState(
 ) : ViewState {
     companion object {
         val initialState = DriverPickerState(
+            start = true,
             isLoading = false,
             isMapLoading = true,
             rideEstimate = RideEstimate.empty,
@@ -41,7 +44,8 @@ internal sealed interface DriverPickerEvent : ViewEvent {
         val origin: String,
         val destination: String
     ) : DriverPickerEvent
-    data class Error(val message: String?) : DriverPickerEvent
+    data class UpdateResponseError(val message: String?) : DriverPickerEvent
+    data class UpdateInternalError(val internalError: InternalError?) : DriverPickerEvent
     data class UpdateRideEstimate(val rideEstimate: RideEstimate) : DriverPickerEvent
     data class ChooseDriver(
         val driverId: Long,
@@ -54,7 +58,8 @@ internal sealed interface DriverPickerEvent : ViewEvent {
 
 @Immutable
 internal sealed interface DriverPickerSideEffect : ViewSideEffect {
-    data  class ShowError(val message: String?) : DriverPickerSideEffect
+    data  class ShowResponseError(val message: String?) : DriverPickerSideEffect
+    data class ShowInternalError(val internalError: InternalError?) : DriverPickerSideEffect
     data object NavigateToTravelHistory : DriverPickerSideEffect
     data object NavigateBack : DriverPickerSideEffect
 }

@@ -1,5 +1,6 @@
 package com.bruno13palhano.takeme.ui.screens.travelhistory.presenter
 
+import com.bruno13palhano.data.model.DriverInfo
 import com.bruno13palhano.takeme.ui.shared.base.Reducer
 
 internal class TravelHistoryReducer :
@@ -18,8 +19,12 @@ internal class TravelHistoryReducer :
             }
 
             is TravelHistoryEvent.GetDrivers -> {
+                val currentDriver = event.drivers.firstOrNull() ?: DriverInfo.empty
+
                 previousState.copy(
+                    start = false,
                     isLoading = false,
+                    currentDriver = currentDriver,
                     drivers = event.drivers
                 ) to null
             }
@@ -31,10 +36,18 @@ internal class TravelHistoryReducer :
                 ) to null
             }
 
-            is TravelHistoryEvent.Error -> {
+            is TravelHistoryEvent.UpdateResponseError -> {
                 previousState.copy(
-                    isLoading = false
-                ) to TravelHistorySideEffect.ShowError(message = event.message)
+                    isLoading = false,
+                    rides = emptyList()
+                ) to TravelHistorySideEffect.ShowResponseError(message = event.message)
+            }
+
+            is TravelHistoryEvent.UpdateInternalError -> {
+                previousState.copy(
+                    isLoading = false,
+                    rides = emptyList()
+                ) to TravelHistorySideEffect.ShowInternalError(internalError = event.internalError)
             }
 
             is TravelHistoryEvent.InvalidFieldError -> {

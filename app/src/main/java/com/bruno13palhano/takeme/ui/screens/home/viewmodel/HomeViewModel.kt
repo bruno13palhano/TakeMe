@@ -56,13 +56,17 @@ internal class HomeViewModel @Inject constructor(
 
             is Resource.ServerResponseError -> {
                 sendEvent(
-                    event = HomeEvent.Error(
+                    event = HomeEvent.UpdateErrorResponse(
                         message = response.remoteErrorResponse!!.errorDescription
                     )
                 )
             }
 
-            is Resource.Error -> sendEvent(event = HomeEvent.Error(message = response.message))
+            is Resource.Error -> {
+                sendEvent(
+                    event = HomeEvent.UpdateInternalError(internalError = response.internalError)
+                )
+            }
         }
     }
 

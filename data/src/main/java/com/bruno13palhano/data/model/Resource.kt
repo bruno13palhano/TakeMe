@@ -2,11 +2,11 @@ package com.bruno13palhano.data.model
 
 sealed class Resource<T>(
     val data: T?,
-    val message: String?,
+    val internalError: InternalError?,
     val remoteErrorResponse: ErrorResponse?
 ) {
     class Success<T>(data: T) : Resource<T>(data, null, null)
-    class Error<T>(message: String) : Resource<T>(null, message, null)
+    class Error<T>(internalError: InternalError?) : Resource<T>(null, internalError, null)
     class ServerResponseError<T>(errorResponse: ErrorResponse?) : Resource<T>(
         null,
         null,
@@ -26,7 +26,7 @@ internal fun <T, R> Resource<T>.convert(data: R): Resource<R> {
     return when (this) {
         is Resource.Success -> { Resource.Success(data = data) }
 
-        is Resource.Error -> { Resource.Error(message = this.message ?: "") }
+        is Resource.Error -> { Resource.Error(internalError = this.internalError) }
 
         is Resource.ServerResponseError -> {
             Resource.ServerResponseError(errorResponse = this.remoteErrorResponse)

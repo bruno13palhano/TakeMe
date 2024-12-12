@@ -17,6 +17,9 @@
     <string name="customer_id_required">Customer id is required</string>
     <string name="no_driver_found">No driver found</string>
     <string name="choose">Choose</string>
+    <string name="internal_error_server">Server error</string>
+    <string name="internal_error_no_internet">No internet connection</string>
+    <string name="internal_error_unknown">Unknown error</string>
     <string name="ride_title_tag">From %s to %s</string>
     <string name="ride_description_tag">
         The ride lasted %s and covered a distance of %.2fKm, coasting R$ %.2f. The driver was %s.

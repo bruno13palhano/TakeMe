@@ -59,6 +59,7 @@ import com.bruno13palhano.takeme.ui.shared.base.rememberFlowWithLifecycle
 import com.bruno13palhano.takeme.ui.shared.components.CircularProgress
 import com.bruno13palhano.takeme.ui.shared.components.CustomTextField
 import com.bruno13palhano.takeme.ui.shared.components.formatDate
+import com.bruno13palhano.takeme.ui.shared.components.getInternalErrorMessages
 import com.bruno13palhano.takeme.ui.theme.TakeMeTheme
 import kotlinx.coroutines.launch
 
@@ -76,20 +77,32 @@ internal fun TravelHistoryRoute(
     val customerIdError = stringResource(id = R.string.customer_id_required)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val internalErrorMessages = getInternalErrorMessages()
 
     BackHandler { navigateToHome() }
 
-    LaunchedEffect(Unit) {
-        viewModel.onAction(action = TravelHistoryAction.OnGetDrivers)
+    LaunchedEffect(state.start) {
+        if (state.start) {
+            viewModel.onAction(action = TravelHistoryAction.OnGetDrivers)
+        }
     }
 
     LaunchedEffect(sideEffect) {
         sideEffect.collect {
             when (it) {
-                is TravelHistorySideEffect.ShowError -> {
+                is TravelHistorySideEffect.ShowResponseError -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = it.message ?: "",
+                            withDismissAction = true
+                        )
+                    }
+                }
+
+                is TravelHistorySideEffect.ShowInternalError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = internalErrorMessages[it.internalError] ?: "",
                             withDismissAction = true
                         )
                     }

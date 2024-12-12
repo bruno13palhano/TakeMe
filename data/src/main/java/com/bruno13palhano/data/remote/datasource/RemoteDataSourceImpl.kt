@@ -1,6 +1,7 @@
 package com.bruno13palhano.data.remote.datasource
 
 import com.bruno13palhano.data.model.ErrorResponse
+import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.remote.model.request.DriverRequest
 import com.bruno13palhano.data.remote.model.response.RideEstimateResponse
 import com.bruno13palhano.data.remote.model.response.RemoteErrorResponse
@@ -24,11 +25,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
         val response = try {
             service.findDriver(request = driverRequest)
         } catch (e: HttpException) {
-            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+            return Resource.Error(internalError = InternalError.SERVER_ERROR)
         } catch (e: IOException) {
-            return Resource.Error(message = "No Internet Connection")
-        }catch (e: Exception) {
-            return Resource.Error(message = e.message.toString())
+            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
+        } catch (e: Exception) {
+            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
         }
 
         return getResponse(response = response)
@@ -38,11 +39,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
         val response = try {
             service.confirmRide(request = confirmRideRequest)
         } catch (e: HttpException) {
-            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+            return Resource.Error(internalError = InternalError.SERVER_ERROR)
         } catch (e: IOException) {
-            return Resource.Error(message = "No Internet Connection")
-        }catch (e: Exception) {
-            return Resource.Error(message = e.message.toString())
+            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
+        } catch (e: Exception) {
+            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
         }
 
         return getResponse(response = response)
@@ -55,11 +56,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
         val response = try {
             service.getCustomerRides(customerId = customerId, driverId = driverId)
         } catch (e: HttpException) {
-            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+            return Resource.Error(internalError = InternalError.SERVER_ERROR)
         } catch (e: IOException) {
-            return Resource.Error(message = "No Internet Connection")
-        }catch (e: Exception) {
-            return Resource.Error(message = e.message.toString())
+            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
+        } catch (e: Exception) {
+            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
         }
 
         return getResponse(response = response)
@@ -69,11 +70,11 @@ internal class RemoteDataSourceImpl @Inject constructor(
         val response = try {
             service.getCustomerRides(customerId = customerId, driverId = driverId)
         } catch (e: HttpException) {
-            return Resource.Error(message = "Network Error: ${e.response()?.code()}")
+            return Resource.Error(internalError = InternalError.SERVER_ERROR)
         } catch (e: IOException) {
-            return Resource.Error(message = "No Internet Connection")
-        }catch (e: Exception) {
-            return Resource.Error(message = e.message.toString())
+            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
+        } catch (e: Exception) {
+            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
         }
 
         return getResponse(response = response)

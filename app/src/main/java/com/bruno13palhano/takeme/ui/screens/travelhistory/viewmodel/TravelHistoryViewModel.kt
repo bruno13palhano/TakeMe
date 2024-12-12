@@ -64,9 +64,6 @@ internal class TravelHistoryViewModel @Inject constructor(
         viewModelScope.launch(SupervisorJob() + dispatcher) {
             driverInfoRepository.getAllDriverInfo().collect {
                 sendEvent(event = TravelHistoryEvent.GetDrivers(drivers = it))
-                it.firstOrNull()?.let { driver ->
-                    sendEvent(event = TravelHistoryEvent.UpdateCurrentDriver(driver = driver))
-                }
             }
         }
     }
@@ -103,14 +100,18 @@ internal class TravelHistoryViewModel @Inject constructor(
 
                 is Resource.ServerResponseError -> {
                     sendEvent(
-                        event = TravelHistoryEvent.Error(
+                        event = TravelHistoryEvent.UpdateResponseError(
                             message = response.remoteErrorResponse?.errorDescription
                         )
                     )
                 }
 
                 is Resource.Error -> {
-                    sendEvent(event = TravelHistoryEvent.Error(message = response.message))
+                    sendEvent(
+                        event = TravelHistoryEvent.UpdateInternalError(
+                            internalError = response.internalError
+                        )
+                    )
                 }
             }
         }

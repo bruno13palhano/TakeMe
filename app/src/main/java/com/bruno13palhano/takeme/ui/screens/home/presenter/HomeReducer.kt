@@ -10,10 +10,16 @@ internal class HomeReducer : Reducer<HomeState, HomeEvent, HomeSideEffect> {
         return when (event) {
             is HomeEvent.Search -> search(previousState = previousState)
 
-            is HomeEvent.Error -> {
+            is HomeEvent.UpdateErrorResponse -> {
                 previousState.copy(
                     isSearch = false
-                ) to HomeSideEffect.ShowError(message = event.message)
+                ) to HomeSideEffect.ShowResponseError(message = event.message)
+            }
+
+            is HomeEvent.UpdateInternalError -> {
+                previousState.copy(
+                    isSearch = false
+                ) to HomeSideEffect.ShowInternalError(internalError = event.internalError)
             }
 
             is HomeEvent.NoDriverFound -> {

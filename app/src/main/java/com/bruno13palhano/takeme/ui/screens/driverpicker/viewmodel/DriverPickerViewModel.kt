@@ -109,14 +109,18 @@ internal class DriverPickerViewModel @Inject constructor(
 
             is Resource.ServerResponseError -> {
                 sendEvent(
-                    event = DriverPickerEvent.Error(
+                    event = DriverPickerEvent.UpdateResponseError(
                         message = response.remoteErrorResponse!!.errorDescription
                     )
                 )
             }
 
             is Resource.Error -> {
-                sendEvent(event = DriverPickerEvent.Error(message = response.message))
+                sendEvent(
+                    event = DriverPickerEvent.UpdateInternalError(
+                        internalError = response.internalError
+                    )
+                )
             }
         }
     }
@@ -127,7 +131,7 @@ internal class DriverPickerViewModel @Inject constructor(
                 sendEvent(event = DriverPickerEvent.NavigateToTravelHistory)
             } else {
                 sendEvent(
-                    event = DriverPickerEvent.Error(message = response.message)
+                    event = DriverPickerEvent.UpdateResponseError(message = response.internalError?.name)
                 )
             }
         }

@@ -38,6 +38,7 @@ import com.bruno13palhano.takeme.ui.shared.base.rememberFlowWithLifecycle
 import com.bruno13palhano.takeme.ui.shared.components.CircularProgress
 import com.bruno13palhano.takeme.ui.shared.components.DriverInfoCard
 import com.bruno13palhano.takeme.ui.shared.components.EstimateMap
+import com.bruno13palhano.takeme.ui.shared.components.getInternalErrorMessages
 import kotlinx.coroutines.launch
 
 @Composable
@@ -54,30 +55,44 @@ internal fun DriverPickerRoute(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val internalErrorMessages = getInternalErrorMessages()
 
     BackHandler { navigateBack() }
 
-    LaunchedEffect(Unit) {
-        viewModel.onAction(
-            action = DriverPickerAction.OnUpdateCustomerParams(
-                customerId = customerId,
-                origin = origin,
-                destination = destination
+    LaunchedEffect(state.start) {
+        if (state.start) {
+            viewModel.onAction(
+                action = DriverPickerAction.OnUpdateCustomerParams(
+                    customerId = customerId,
+                    origin = origin,
+                    destination = destination
+                )
             )
-        )
+        }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.onAction(action = DriverPickerAction.OnGetLastRideEstimate)
+    LaunchedEffect(state.start) {
+        if (state.start) {
+            viewModel.onAction(action = DriverPickerAction.OnGetLastRideEstimate)
+        }
     }
 
     LaunchedEffect(sideEffect) {
         sideEffect.collect {
             when (it) {
-                is DriverPickerSideEffect.ShowError -> {
+                is DriverPickerSideEffect.ShowResponseError -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = it.message ?: "",
+                            withDismissAction = true
+                        )
+                    }
+                }
+
+                is DriverPickerSideEffect.ShowInternalError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = internalErrorMessages[it.internalError] ?: "",
                             withDismissAction = true
                         )
                     }

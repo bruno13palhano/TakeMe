@@ -11,16 +11,23 @@ internal class DriverPickerReducer :
         return when (event) {
             is DriverPickerEvent.UpdateCustomerParams -> {
                 previousState.copy(
+                    start = false,
                     customerId = event.customerId,
                     origin = event.origin,
                     destination = event.destination
                 ) to null
             }
 
-            is DriverPickerEvent.Error -> {
+            is DriverPickerEvent.UpdateResponseError -> {
                 previousState.copy(
                     isLoading = false
-                ) to DriverPickerSideEffect.ShowError(message = event.message)
+                ) to DriverPickerSideEffect.ShowResponseError(message = event.message)
+            }
+
+            is DriverPickerEvent.UpdateInternalError -> {
+                previousState.copy(
+                    isLoading = false
+                ) to DriverPickerSideEffect.ShowInternalError(internalError = event.internalError)
             }
 
             is DriverPickerEvent.UpdateRideEstimate -> {

@@ -38,6 +38,7 @@ import com.bruno13palhano.takeme.ui.shared.base.clickableWithoutRipple
 import com.bruno13palhano.takeme.ui.shared.base.rememberFlowWithLifecycle
 import com.bruno13palhano.takeme.ui.shared.components.CircularProgress
 import com.bruno13palhano.takeme.ui.shared.components.CustomTextField
+import com.bruno13palhano.takeme.ui.shared.components.getInternalErrorMessages
 import kotlinx.coroutines.launch
 
 @Composable
@@ -55,14 +56,24 @@ internal fun HomeRoute(
     val noDriverFound = stringResource(id = R.string.no_driver_found)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val internalErrorMessages = getInternalErrorMessages()
 
     LaunchedEffect(sideEffect) {
         sideEffect.collect {
             when (it) {
-                is HomeSideEffect.ShowError -> {
+                is HomeSideEffect.ShowResponseError -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = it.message ?: "",
+                            withDismissAction = true
+                        )
+                    }
+                }
+
+                is HomeSideEffect.ShowInternalError -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = internalErrorMessages[it.internalError] ?: "",
                             withDismissAction = true
                         )
                     }

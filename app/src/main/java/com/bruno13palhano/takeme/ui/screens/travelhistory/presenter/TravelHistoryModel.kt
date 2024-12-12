@@ -2,6 +2,7 @@ package com.bruno13palhano.takeme.ui.screens.travelhistory.presenter
 
 import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.DriverInfo
+import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.Ride
 import com.bruno13palhano.takeme.ui.shared.base.ViewAction
 import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
@@ -10,6 +11,7 @@ import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class TravelHistoryState(
+    val start: Boolean,
     val isLoading: Boolean,
     val isFieldInvalid: Boolean,
     val customerId: String,
@@ -22,6 +24,7 @@ internal data class TravelHistoryState(
 ) : ViewState {
     companion object {
         val initialState = TravelHistoryState(
+            start = true,
             isLoading = false,
             isFieldInvalid = false,
             customerId = "",
@@ -41,7 +44,8 @@ internal sealed interface TravelHistoryEvent : ViewEvent {
     data class UpdateCurrentDriver(val driver: DriverInfo) : TravelHistoryEvent
     data class GetDrivers(val drivers: List<DriverInfo>) : TravelHistoryEvent
     data class UpdateRides(val rides: List<Ride>) : TravelHistoryEvent
-    data class Error(val message: String?) : TravelHistoryEvent
+    data class UpdateResponseError(val message: String?) : TravelHistoryEvent
+    data class UpdateInternalError(val internalError: InternalError?) : TravelHistoryEvent
     data object InvalidFieldError : TravelHistoryEvent
     data class GetCustomerRides(val customerId: String, val driverId: Long) : TravelHistoryEvent
     data object DismissKeyboard : TravelHistoryEvent
@@ -50,7 +54,8 @@ internal sealed interface TravelHistoryEvent : ViewEvent {
 
 @Immutable
 internal sealed interface TravelHistorySideEffect : ViewSideEffect {
-    data class ShowError(val message: String?) : TravelHistorySideEffect
+    data class ShowResponseError(val message: String?) : TravelHistorySideEffect
+    data class ShowInternalError(val internalError: InternalError?) : TravelHistorySideEffect
     data object InvalidFieldError : TravelHistorySideEffect
     data object DismissKeyboard : TravelHistorySideEffect
     data object NavigateToHome : TravelHistorySideEffect
