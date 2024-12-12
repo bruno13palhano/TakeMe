@@ -23,6 +23,8 @@ roomVersion = "2.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 mapsVersion = "6.4.0"
+mockWebServerVersion = "4.12.0"
+coroutinesVersion = "1.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +60,9 @@ room-coroutines = { module = "androidx.room:room-ktx", version.ref = "roomVersio
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 maps = { module = "com.google.maps.android:maps-compose", version.ref = "mapsVersion" }
+mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockWebServerVersion" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesVersion" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
