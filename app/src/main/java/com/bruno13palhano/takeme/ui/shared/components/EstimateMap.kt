@@ -1,18 +1,17 @@
 package com.bruno13palhano.takeme.ui.shared.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.bruno13palhano.data.model.Route
-import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerAction
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -22,10 +21,10 @@ import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 internal fun EstimateMap(
+    modifier: Modifier = Modifier,
     route: Route,
     originTitle: String,
-    destinationTitle: String,
-    onAction: (action: DriverPickerAction) -> Unit
+    destinationTitle: String
 ) {
     val uiSettings by remember {
         mutableStateOf(
@@ -44,36 +43,45 @@ internal fun EstimateMap(
         )
     }
 
+    val cameraPosition = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(
+            LatLng(0.0, 0.0),
+            0f
+        )
+    }
+
+    val bounds = LatLngBounds.builder()
+
+    val markerOrigin = rememberMarkerState()
+    val markerDestination = rememberMarkerState()
+
+    LaunchedEffect(route) {
+        markerOrigin.position = LatLng(
+            route.origin.latitude,
+            route.origin.longitude
+        )
+
+        markerDestination.position = LatLng(
+            route.destination.latitude,
+            route.destination.longitude
+        )
+    }
+
     GoogleMap(
-        modifier = Modifier
-            .sizeIn(maxHeight = 200.dp)
-            .fillMaxWidth(),
-        cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(
-                LatLng(
-                    route.origin.latitude,
-                    route.origin.longitude
-                ),
-                10f
-            )
-        },
+        modifier = modifier,
+        cameraPositionState = cameraPosition,
         uiSettings = uiSettings,
-        onMapLoaded = { onAction(DriverPickerAction.OnUpdateMapLoading(isMapLoading = false)) }
+        onMapLoaded = {
+            route.steps.forEach {
+                bounds.include(LatLng(it.startLocation.latitude, it.startLocation.longitude))
+                bounds.include(LatLng(it.endLocation.latitude, it.endLocation.longitude))
+            }
+
+            cameraPosition.move(
+                update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 100)
+            )
+        }
     ) {
-        val markerOrigin = rememberMarkerState(
-            position = LatLng(
-                route.origin.latitude,
-                route.origin.longitude
-            )
-        )
-
-        val markerDestination = rememberMarkerState(
-            position = LatLng(
-                route.destination.latitude,
-                route.destination.longitude
-            )
-        )
-
         Marker(state = markerOrigin, title = originTitle)
 
         Marker(state = markerDestination, title = destinationTitle)
