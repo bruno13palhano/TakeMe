@@ -1,5 +1,6 @@
 package com.bruno13palhano.takeme.ui.screens.travelhistory.presenter
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +58,7 @@ import com.bruno13palhano.takeme.ui.shared.base.clickableWithoutRipple
 import com.bruno13palhano.takeme.ui.shared.base.rememberFlowWithLifecycle
 import com.bruno13palhano.takeme.ui.shared.components.CircularProgress
 import com.bruno13palhano.takeme.ui.shared.components.CustomTextField
+import com.bruno13palhano.takeme.ui.shared.components.formatDate
 import com.bruno13palhano.takeme.ui.theme.TakeMeTheme
 import kotlinx.coroutines.launch
 
@@ -74,6 +76,8 @@ internal fun TravelHistoryRoute(
     val customerIdError = stringResource(id = R.string.customer_id_required)
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    BackHandler { navigateToHome() }
 
     LaunchedEffect(Unit) {
         viewModel.onAction(action = TravelHistoryAction.OnGetDrivers)
@@ -190,7 +194,7 @@ private fun TravelHistoryContent(
                         modifier = Modifier.padding(4.dp),
                         origin = ride.origin,
                         destination = ride.destination,
-                        date = ride.date,
+                        date = formatDate(date = ride.date),
                         driverName = ride.driver.name,
                         distance = ride.distance,
                         duration = ride.duration,

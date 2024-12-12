@@ -1,12 +1,15 @@
 package com.bruno13palhano.takeme.ui.screens.driverpicker.presenter
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -15,11 +18,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -31,6 +38,7 @@ import com.bruno13palhano.takeme.ui.shared.base.rememberFlowWithLifecycle
 import com.bruno13palhano.takeme.ui.shared.components.CircularProgress
 import com.bruno13palhano.takeme.ui.shared.components.DriverInfoCard
 import com.bruno13palhano.takeme.ui.shared.components.EstimateMap
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun DriverPickerRoute(
@@ -43,6 +51,11 @@ internal fun DriverPickerRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    BackHandler { navigateBack() }
 
     LaunchedEffect(Unit) {
         viewModel.onAction(
@@ -62,7 +75,12 @@ internal fun DriverPickerRoute(
         sideEffect.collect {
             when (it) {
                 is DriverPickerSideEffect.ShowError -> {
-                    println("Error: ${it.message}")
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = it.message ?: "",
+                            withDismissAction = true
+                        )
+                    }
                 }
 
                 is DriverPickerSideEffect.NavigateToTravelHistory -> navigateToTravelHistory()
@@ -74,14 +92,16 @@ internal fun DriverPickerRoute(
 
     DriverPickerContent(
         state = state,
+        snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DriverPickerContent(
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
     state: DriverPickerState,
     onAction: (action: DriverPickerAction) -> Unit
 ) {
@@ -99,7 +119,8 @@ private fun DriverPickerContent(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
         if (state.isLoading) {
             CircularProgress(
@@ -108,24 +129,22 @@ private fun DriverPickerContent(
                     .fillMaxSize()
             )
         } else {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .padding(it)
-                    .consumeWindowInsets(it),
-                contentPadding = PaddingValues(4.dp)
+                    .consumeWindowInsets(it)
+                    .fillMaxSize()
             ) {
-                if (state.rideEstimate.route.isNotEmpty()) {
-                    stickyHeader {
-                        EstimateMap(
-                            route = state.rideEstimate.route,
-                            originTitle = state.origin,
-                            destinationTitle = state.destination,
-                            onAction = onAction
-                        )
-                    }
-                }
+                EstimateMap(
+                    modifier = Modifier
+                        .sizeIn(maxHeight = 200.dp)
+                        .fillMaxWidth(),
+                    route = state.rideEstimate.route,
+                    originTitle = state.origin,
+                    destinationTitle = state.destination
+                )
 
-                if (!state.isMapLoading) {
+                LazyColumn(contentPadding = PaddingValues(4.dp)) {
                     items(
                         items = state.rideEstimate.drivers,
                         key = { driver -> driver.id }

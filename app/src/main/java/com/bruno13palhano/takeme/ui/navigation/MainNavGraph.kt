@@ -45,7 +45,15 @@ internal fun MainNavGraph(
                 origin = origin,
                 destination = destination,
                 navigateToTravelHistory = { navController.navigate(MainRoutes.TravelHistory) },
-                navigateBack = { navController.popBackStack() }
+                navigateBack = {
+                    navController.navigate(MainRoutes.Home) {
+                        popUpTo(MainRoutes.Home) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
         }
 
