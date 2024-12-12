@@ -9,8 +9,6 @@ internal class TravelHistoryReducer :
         event: TravelHistoryEvent
     ): Pair<TravelHistoryState, TravelHistorySideEffect?> {
         return when (event) {
-            is TravelHistoryEvent.Loading -> previousState.copy(isLoading = event.isLoading) to null
-
             is TravelHistoryEvent.ExpandSelector -> {
                 previousState.copy(expandSelector = event.expandSelector) to null
             }

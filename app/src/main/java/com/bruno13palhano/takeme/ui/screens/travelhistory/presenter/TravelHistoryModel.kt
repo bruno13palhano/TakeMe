@@ -37,7 +37,6 @@ internal data class TravelHistoryState(
 
 @Immutable
 internal sealed interface TravelHistoryEvent : ViewEvent {
-    data class Loading(val isLoading: Boolean) : TravelHistoryEvent
     data class ExpandSelector(val expandSelector: Boolean) : TravelHistoryEvent
     data class UpdateCurrentDriver(val driver: DriverInfo) : TravelHistoryEvent
     data class GetDrivers(val drivers: List<DriverInfo>) : TravelHistoryEvent
@@ -59,7 +58,6 @@ internal sealed interface TravelHistorySideEffect : ViewSideEffect {
 
 @Immutable
 internal sealed interface TravelHistoryAction : ViewAction {
-    data class OnLoading(val isLoading: Boolean) : TravelHistoryAction
     data class OnExpandSelector(val expandSelector: Boolean) : TravelHistoryAction
     data class OnUpdateCurrentDriver(val driver: DriverInfo) : TravelHistoryAction
     data object OnGetDrivers : TravelHistoryAction
