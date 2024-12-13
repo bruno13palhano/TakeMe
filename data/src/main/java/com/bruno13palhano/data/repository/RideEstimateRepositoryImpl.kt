@@ -29,7 +29,7 @@ internal class RideEstimateRepositoryImpl @Inject constructor(
         origin: String?,
         destination: String?
     ): Resource<RideEstimate> {
-        val result =  remote.searchDriver(
+        val result = remote.searchDriver(
             driverRequest = DriverRequest(
                 customerId = customerId,
                 origin = origin,
