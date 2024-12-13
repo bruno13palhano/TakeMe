@@ -9,14 +9,12 @@ import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class HomeState(
-    val start: Boolean,
     val isSearch: Boolean,
     val isFieldInvalid: Boolean,
     val homeInputFields: HomeInputFields
 ) : ViewState {
     companion object {
         val initialState = HomeState(
-            start = true,
             isSearch = false,
             isFieldInvalid = false,
             homeInputFields = HomeInputFields()
