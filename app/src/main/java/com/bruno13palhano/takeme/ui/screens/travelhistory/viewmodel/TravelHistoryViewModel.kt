@@ -16,7 +16,6 @@ import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistor
 import com.bruno13palhano.takeme.ui.shared.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +24,7 @@ import javax.inject.Inject
 internal class TravelHistoryViewModel @Inject constructor(
     @DriverInfoRep private val driverInfoRepository: DriverInfoRepository,
     @RidesRep private val ridesRepository: RidesRepository,
-    @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ): BaseViewModel<TravelHistoryState, TravelHistoryAction, TravelHistoryEvent, TravelHistorySideEffect>(
     initialState = TravelHistoryState.initialState,
     reducer = TravelHistoryReducer()

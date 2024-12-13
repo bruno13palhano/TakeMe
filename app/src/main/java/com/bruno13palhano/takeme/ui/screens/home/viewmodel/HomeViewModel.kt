@@ -15,7 +15,6 @@ import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
 import com.bruno13palhano.takeme.ui.shared.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
     @RideEstimateRep private val repository: RideEstimateRepository,
-    @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ): BaseViewModel<HomeState, HomeAction, HomeEvent, HomeSideEffect>(
     initialState = HomeState.initialState,
     reducer = HomeReducer()

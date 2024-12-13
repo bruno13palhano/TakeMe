@@ -18,7 +18,6 @@ import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerS
 import com.bruno13palhano.takeme.ui.shared.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +26,7 @@ import javax.inject.Inject
 internal class DriverPickerViewModel @Inject constructor(
     @RideEstimateRep private val rideEstimateRepository: RideEstimateRepository,
     @ConfirmRideRep private val confirmRideRepository: ConfirmRideRepository,
-    @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : BaseViewModel<DriverPickerState, DriverPickerAction, DriverPickerEvent, DriverPickerSideEffect>(
     initialState = DriverPickerState.initialState,
     reducer = DriverPickerReducer()
