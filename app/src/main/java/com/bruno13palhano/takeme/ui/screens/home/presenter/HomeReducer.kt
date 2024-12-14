@@ -8,7 +8,12 @@ internal class HomeReducer : Reducer<HomeState, HomeEvent, HomeSideEffect> {
         event: HomeEvent
     ): Pair<HomeState, HomeSideEffect?> {
         return when (event) {
-            is HomeEvent.Search -> search(previousState = previousState)
+            is HomeEvent.Search -> {
+                previousState.copy(
+                    isSearch = true,
+                    isFieldInvalid = false
+                ) to null
+            }
 
             is HomeEvent.UpdateErrorResponse -> {
                 previousState.copy(
@@ -26,25 +31,18 @@ internal class HomeReducer : Reducer<HomeState, HomeEvent, HomeSideEffect> {
                 previousState.copy(isSearch = false) to HomeSideEffect.ShowNoDriverFound
             }
 
+            is HomeEvent.InvalidFieldError -> {
+                previousState.copy(
+                    isSearch = false,
+                    isFieldInvalid = true
+                ) to HomeSideEffect.InvalidFieldError
+            }
+
             is HomeEvent.DismissKeyboard -> previousState to HomeSideEffect.DismissKeyboard
 
             is HomeEvent.NavigateToDriverPicker -> navigateToDriverPicker(
                 previousState = previousState
             )
-        }
-    }
-
-    private fun search(previousState: HomeState): Pair<HomeState, HomeSideEffect?> {
-        return if (previousState.homeInputFields.isValid()) {
-            previousState.copy(
-                isSearch = true,
-                isFieldInvalid = false
-            ) to null
-        } else {
-            previousState.copy(
-                isSearch = false,
-                isFieldInvalid = true
-            ) to HomeSideEffect.InvalidFieldError
         }
     }
 

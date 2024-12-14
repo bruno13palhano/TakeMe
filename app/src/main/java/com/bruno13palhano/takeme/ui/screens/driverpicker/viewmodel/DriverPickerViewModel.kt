@@ -10,6 +10,8 @@ import com.bruno13palhano.data.model.RequestConfirmRide
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.repository.ConfirmRideRepository
 import com.bruno13palhano.data.repository.RideEstimateRepository
+import com.bruno13palhano.takeme.ui.screens.di.DefaultDriverPickerReducer
+import com.bruno13palhano.takeme.ui.screens.di.DefaultDriverPickerState
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerAction
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerEvent
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerReducer
@@ -26,10 +28,12 @@ import javax.inject.Inject
 internal class DriverPickerViewModel @Inject constructor(
     @RideEstimateRep private val rideEstimateRepository: RideEstimateRepository,
     @ConfirmRideRep private val confirmRideRepository: ConfirmRideRepository,
+    @DefaultDriverPickerState private val defaultDriverPickerState: DriverPickerState,
+    @DefaultDriverPickerReducer private val defaultDriverPickerReducer: DriverPickerReducer,
     @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : BaseViewModel<DriverPickerState, DriverPickerAction, DriverPickerEvent, DriverPickerSideEffect>(
-    initialState = DriverPickerState.initialState,
-    reducer = DriverPickerReducer()
+    initialState = defaultDriverPickerState,
+    reducer = defaultDriverPickerReducer
 ) {
     override fun onAction(action: DriverPickerAction) {
         when (action) {

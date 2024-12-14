@@ -8,6 +8,8 @@ import com.bruno13palhano.data.di.TakeMeDispatchers
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.repository.DriverInfoRepository
 import com.bruno13palhano.data.repository.RidesRepository
+import com.bruno13palhano.takeme.ui.screens.di.DefaultTravelHistoryReducer
+import com.bruno13palhano.takeme.ui.screens.di.DefaultTravelHistoryState
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryAction
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryEvent
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryReducer
@@ -24,10 +26,12 @@ import javax.inject.Inject
 internal class TravelHistoryViewModel @Inject constructor(
     @DriverInfoRep private val driverInfoRepository: DriverInfoRepository,
     @RidesRep private val ridesRepository: RidesRepository,
+    @DefaultTravelHistoryState private val initialTravelHistoryState: TravelHistoryState,
+    @DefaultTravelHistoryReducer private val travelHistoryReducer: TravelHistoryReducer,
     @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher
-): BaseViewModel<TravelHistoryState, TravelHistoryAction, TravelHistoryEvent, TravelHistorySideEffect>(
-    initialState = TravelHistoryState.initialState,
-    reducer = TravelHistoryReducer()
+) : BaseViewModel<TravelHistoryState, TravelHistoryAction, TravelHistoryEvent, TravelHistorySideEffect>(
+    initialState = initialTravelHistoryState,
+    reducer = travelHistoryReducer
 ) {
     override fun onAction(action: TravelHistoryAction) {
         when (action) {
