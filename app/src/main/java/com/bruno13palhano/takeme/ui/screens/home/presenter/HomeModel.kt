@@ -28,6 +28,7 @@ internal sealed interface HomeEvent : ViewEvent {
     data class UpdateErrorResponse(val message: String?) : HomeEvent
     data class UpdateInternalError(val internalError: InternalError?) : HomeEvent
     data object NoDriverFound : HomeEvent
+    data object InvalidFieldError : HomeEvent
     data object DismissKeyboard : HomeEvent
     data object NavigateToDriverPicker : HomeEvent
 }

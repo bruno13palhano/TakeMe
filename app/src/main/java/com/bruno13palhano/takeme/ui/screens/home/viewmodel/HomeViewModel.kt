@@ -36,16 +36,20 @@ internal class HomeViewModel @Inject constructor(
     }
 
     private fun navigateToDriverPicker() {
-        viewModelScope.launch(SupervisorJob() + dispatcher) {
+        if (state.value.homeInputFields.isValid()) {
             sendEvent(HomeEvent.Search)
 
-            val response = repository.searchDriver(
-                customerId = state.value.homeInputFields.customerId,
-                origin = state.value.homeInputFields.origin,
-                destination = state.value.homeInputFields.destination
-            )
+            viewModelScope.launch(SupervisorJob() + dispatcher) {
+                val response = repository.searchDriver(
+                    customerId = state.value.homeInputFields.customerId,
+                    origin = state.value.homeInputFields.origin,
+                    destination = state.value.homeInputFields.destination
+                )
 
-            processResponse(response = response)
+                processResponse(response = response)
+            }
+        } else {
+            sendEvent(HomeEvent.InvalidFieldError)
         }
     }
 
