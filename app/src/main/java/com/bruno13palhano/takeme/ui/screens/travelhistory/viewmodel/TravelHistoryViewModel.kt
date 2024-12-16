@@ -90,7 +90,7 @@ internal class TravelHistoryViewModel @Inject constructor(
         viewModelScope.launch(SupervisorJob() + dispatcher) {
             val response = ridesRepository.getCustomerRides(
                 customerId = customerId,
-                driverId = state.value.currentDriver.id,
+                driverId = driverId,
                 driverName = state.value.currentDriver.name
             )
 
