@@ -2,7 +2,6 @@ package com.bruno13palhano.takeme.ui.shared.base
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
