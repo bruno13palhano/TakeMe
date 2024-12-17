@@ -11,7 +11,6 @@ import com.bruno13palhano.takeme.ui.screens.di.DefaultHomeReducer
 import com.bruno13palhano.takeme.ui.screens.di.DefaultHomeState
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeAction
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeEvent
-import com.bruno13palhano.takeme.ui.screens.home.presenter.HomePresenter
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeReducer
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeSideEffect
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
@@ -19,8 +18,6 @@ import com.bruno13palhano.takeme.ui.shared.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,13 +33,9 @@ internal class HomeViewModel @Inject constructor(
 ) {
     override fun onAction(action: HomeAction) {
         when (action) {
-            is HomeAction.OnDismissKeyboard -> {
-//                sendEvent(HomeEvent.DismissKeyboard)
-            }
+            is HomeAction.OnDismissKeyboard -> sendEvent(HomeEvent.DismissKeyboard)
 
-            is HomeAction.OnNavigateToDriverPicker -> {
-//                navigateToDriverPicker()
-            }
+            is HomeAction.OnNavigateToDriverPicker -> navigateToDriverPicker()
         }
     }
 
@@ -94,15 +87,5 @@ internal class HomeViewModel @Inject constructor(
                 sendEvent(event = HomeEvent.NoDriverFound)
             }
         }
-    }
-
-    override fun states(events: Flow<HomeEvent>): StateFlow<HomeState> {
-        return HomePresenter(
-            initialHomeState = initialHomeState,
-            reducer = homeReducer,
-            repository = repository,
-            homeReducer = homeReducer,
-            dispatcher = dispatcher
-        ).presenter()
     }
 }
