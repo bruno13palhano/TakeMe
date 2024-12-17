@@ -15,8 +15,6 @@ internal abstract class BaseViewModel<State: ViewState, Action: ViewAction, Even
     private var _state: MutableStateFlow<State> = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()
 
-    val events: MutableSharedFlow<Event> = MutableSharedFlow(extraBufferCapacity = 20)
-
     private val _sideEffect = Channel<SideEffect>(capacity = Channel.CONFLATED)
     val sideEffect = _sideEffect.receiveAsFlow()
 
