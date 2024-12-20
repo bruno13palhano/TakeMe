@@ -12,6 +12,7 @@ import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
 import com.bruno13palhano.takeme.ui.screens.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -54,7 +55,7 @@ internal class HomeViewModelTest {
             repository = repository,
             initialHomeState = HomeState.initialState,
             homeReducer = HomeReducer(),
-            dispatcher = UnconfinedTestDispatcher(),
+            ioScope = TestScope(UnconfinedTestDispatcher()),
         )
 
         sut.state.value.homeInputFields.updateCustomerId(customerId)
@@ -188,8 +189,9 @@ internal class HomeViewModelTest {
         repository.insertRideEstimate(validRideEstimate)
 
         sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        advanceUntilIdle()
 
-        assertEquals(sut.state.value.isSearch, true)
+        assertEquals(true, sut.state.value.isSearch)
     }
 
     @Test
@@ -198,7 +200,7 @@ internal class HomeViewModelTest {
 
         sut.onAction(HomeAction.OnNavigateToDriverPicker)
 
-        assertEquals(sut.state.value.isFieldInvalid, false)
+        assertEquals(false, sut.state.value.isFieldInvalid)
     }
 
     @Test
@@ -208,8 +210,9 @@ internal class HomeViewModelTest {
         sut.state.value.homeInputFields.updateCustomerId("")
 
         sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        advanceUntilIdle()
 
-        assertEquals(sut.state.value.isFieldInvalid, true)
+        assertEquals(true, sut.state.value.isFieldInvalid)
     }
 
     @Test
@@ -219,8 +222,9 @@ internal class HomeViewModelTest {
         sut.state.value.homeInputFields.updateOrigin("")
 
         sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        advanceUntilIdle()
 
-        assertEquals(sut.state.value.isFieldInvalid, true)
+        assertEquals(true, sut.state.value.isFieldInvalid)
     }
 
     @Test
@@ -230,7 +234,8 @@ internal class HomeViewModelTest {
         sut.state.value.homeInputFields.updateDestination("")
 
         sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        advanceUntilIdle()
 
-        assertEquals(sut.state.value.isFieldInvalid, true)
+        assertEquals(true, sut.state.value.isFieldInvalid)
     }
 }

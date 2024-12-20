@@ -15,6 +15,7 @@ import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerS
 import com.bruno13palhano.takeme.ui.screens.driverpicker.viewmodel.DriverPickerViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -49,7 +50,7 @@ internal class DriverPickerViewModelTest {
             confirmRideRepository = confirmRideRepository,
             defaultDriverPickerState = DriverPickerState.initialState,
             defaultDriverPickerReducer = DriverPickerReducer(),
-            dispatcher = UnconfinedTestDispatcher()
+            ioScope = TestScope(UnconfinedTestDispatcher())
         )
     }
 
@@ -80,6 +81,8 @@ internal class DriverPickerViewModelTest {
                 destination = "destination"
             )
         )
+
+        advanceUntilIdle()
 
         assertEquals("1", sut.state.value.customerId)
         assertEquals("origin", sut.state.value.origin)
@@ -178,6 +181,7 @@ internal class DriverPickerViewModelTest {
         )
 
         rideEstimateRepository.insertRideEstimate(rideEstimate = rideEstimate)
+        sut.onAction(DriverPickerAction.OnGetLastRideEstimate)
         advanceUntilIdle()
 
         val triggerInternalError = DriverInfo(1L, "Driver 1", 2.5f)

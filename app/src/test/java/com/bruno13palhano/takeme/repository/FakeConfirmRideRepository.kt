@@ -31,8 +31,8 @@ internal class FakeConfirmRideRepository : ConfirmRideRepository {
 
         driverInfo?.let {
             it.minKm?.let { minKm ->
+                println("confirmRide distance: ${confirmRide.distance}")
                 if (minKm > distanceInMetersToKm(confirmRide.distance)) {
-                    println(distanceInMetersToKm(confirmRide.distance))
                     return Resource.ServerResponseError(
                         errorResponse = ErrorResponse(
                             errorCode = "INVALID_DISTANCE",

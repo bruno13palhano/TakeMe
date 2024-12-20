@@ -14,6 +14,7 @@ import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistor
 import com.bruno13palhano.takeme.ui.screens.travelhistory.viewmodel.TravelHistoryViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -48,7 +49,7 @@ internal class TravelHistoryViewModelTest {
             initialTravelHistoryState = TravelHistoryState.initialState,
             travelHistoryReducer = TravelHistoryReducer(),
             ridesRepository = ridesRepository,
-            dispatcher = UnconfinedTestDispatcher()
+            ioScope = TestScope(UnconfinedTestDispatcher())
         )
     }
 
@@ -57,6 +58,7 @@ internal class TravelHistoryViewModelTest {
         val expected = true
 
         sut.onAction(TravelHistoryAction.OnExpandSelector(expandSelector = expected))
+        advanceUntilIdle()
 
         assertEquals(expected, sut.state.value.expandSelector)
     }
@@ -66,6 +68,7 @@ internal class TravelHistoryViewModelTest {
         val expected = DriverInfo(1, "Driver 1", 1.0f)
 
         sut.onAction(TravelHistoryAction.OnUpdateCurrentDriver(driver = expected))
+        advanceUntilIdle()
 
         assertEquals(expected, sut.state.value.currentDriver)
     }
@@ -82,6 +85,7 @@ internal class TravelHistoryViewModelTest {
         }
 
         sut.onAction(TravelHistoryAction.OnGetDrivers)
+        advanceUntilIdle()
 
         assertEquals(expected, sut.state.value.drivers)
     }
@@ -99,6 +103,7 @@ internal class TravelHistoryViewModelTest {
         }
 
         sut.onAction(TravelHistoryAction.OnGetDrivers)
+        advanceUntilIdle()
 
         assertEquals(expected, sut.state.value.currentDriver)
     }
@@ -133,6 +138,7 @@ internal class TravelHistoryViewModelTest {
         sut.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
 
         sut.onAction(TravelHistoryAction.OnGetCustomerRides(customerId = customerId, driverId = driverId))
+        advanceUntilIdle()
 
         assertEquals(expected, sut.state.value.rides)
     }
