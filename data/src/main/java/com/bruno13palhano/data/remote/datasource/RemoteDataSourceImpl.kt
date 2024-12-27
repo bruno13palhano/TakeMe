@@ -21,7 +21,9 @@ import javax.inject.Inject
 internal class RemoteDataSourceImpl @Inject constructor(
     private val service: Service
 ) : RemoteDataSource {
-    override suspend fun searchDriver(driverRequest: DriverRequest): Resource<RideEstimateResponse> {
+    override suspend fun searchDriver(
+        driverRequest: DriverRequest
+    ): Resource<RideEstimateResponse> {
         val response = try {
             service.findDriver(request = driverRequest)
         } catch (e: HttpException) {
@@ -35,49 +37,44 @@ internal class RemoteDataSourceImpl @Inject constructor(
         return getResponse(response = response)
     }
 
-    override suspend fun confirmRide(confirmRideRequest: ConfirmRideRequest): Resource<ConfirmRideResponse> {
-        val response = try {
-            service.confirmRide(request = confirmRideRequest)
-        } catch (e: HttpException) {
-            return Resource.Error(internalError = InternalError.SERVER_ERROR)
-        } catch (e: IOException) {
-            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
-        } catch (e: Exception) {
-            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
+    override suspend fun confirmRide(
+        confirmRideRequest: ConfirmRideRequest
+    ): Resource<ConfirmRideResponse> {
+        return handleError {
+            val response = service.confirmRide(request = confirmRideRequest)
+            getResponse(response = response)
         }
-
-        return getResponse(response = response)
     }
 
     override suspend fun getCustomerRides(
         customerId: String,
         driverId: Long
     ): Resource<RidesResponse> {
-        val response = try {
-            service.getCustomerRides(customerId = customerId, driverId = driverId)
-        } catch (e: HttpException) {
-            return Resource.Error(internalError = InternalError.SERVER_ERROR)
-        } catch (e: IOException) {
-            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
-        } catch (e: Exception) {
-            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
+        return handleError {
+            val response = service.getCustomerRides(customerId = customerId, driverId = driverId)
+            getResponse(response = response)
         }
-
-        return getResponse(response = response)
     }
 
     override suspend fun getRides(customerId: String, driverId: Long): Resource<RidesResponse> {
-        val response = try {
-            service.getCustomerRides(customerId = customerId, driverId = driverId)
-        } catch (e: HttpException) {
-            return Resource.Error(internalError = InternalError.SERVER_ERROR)
-        } catch (e: IOException) {
-            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
-        } catch (e: Exception) {
-            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
+        return handleError {
+            val response = service.getCustomerRides(customerId = customerId, driverId = driverId)
+            getResponse(response = response)
         }
+    }
 
-        return getResponse(response = response)
+    private suspend fun <T> handleError(
+        response: suspend () -> Resource<T>
+    ): Resource<T> {
+        return try {
+            response()
+        } catch (e: HttpException) {
+            Resource.Error(internalError = InternalError.SERVER_ERROR)
+        } catch (e: IOException) {
+            Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
+        } catch (e: Exception) {
+            Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
+        }
     }
 
     private fun <T> getResponse(response: Response<T>): Resource<T> {
