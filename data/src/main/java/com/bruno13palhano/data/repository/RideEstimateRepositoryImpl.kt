@@ -15,8 +15,6 @@ import com.bruno13palhano.data.model.asExternalResponse
 import com.bruno13palhano.data.model.asInternal
 import com.bruno13palhano.data.model.convert
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -45,7 +43,7 @@ internal class RideEstimateRepositoryImpl @Inject constructor(
         result.convert(data = result.data?.asExternalResponse() ?: RideEstimate.empty)
     }
 
-    override fun getLastRideEstimate(): Flow<RideEstimate?> {
-        return rideEstimateData.getLastRideEstimate().map { it?.asExternal() }
+    override suspend fun getLastRideEstimate(): RideEstimate? {
+        return rideEstimateData.getLastRideEstimate()?.asExternal()
     }
 }

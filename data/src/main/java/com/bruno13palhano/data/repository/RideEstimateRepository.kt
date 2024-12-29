@@ -2,7 +2,6 @@ package com.bruno13palhano.data.repository
 
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.model.RideEstimate
-import kotlinx.coroutines.flow.Flow
 
 interface RideEstimateRepository {
     suspend fun insertRideEstimate(rideEstimate: RideEstimate)
@@ -13,5 +12,5 @@ interface RideEstimateRepository {
         destination: String?
     ): Resource<RideEstimate>
 
-    fun getLastRideEstimate(): Flow<RideEstimate?>
+    suspend fun getLastRideEstimate(): RideEstimate?
 }
