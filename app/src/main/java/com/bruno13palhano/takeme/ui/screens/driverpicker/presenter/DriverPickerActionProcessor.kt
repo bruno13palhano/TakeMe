@@ -47,12 +47,9 @@ internal class DriverPickerActionProcessor(
     }
 
     private suspend fun FlowCollector<DriverPickerEvent>.onGetLastRideEstimate() {
-        rideEstimateRepository.getLastRideEstimate().collect {
-            it?.let { rideEstimate ->
-                emit(
-                    DriverPickerEvent.UpdateRideEstimate(rideEstimate = rideEstimate)
-                )
-            }
+        val rideEstimate = rideEstimateRepository.getLastRideEstimate()
+        rideEstimate?.let {
+            emit(DriverPickerEvent.UpdateRideEstimate(rideEstimate = it))
         }
     }
 
