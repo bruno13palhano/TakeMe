@@ -24,17 +24,10 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun searchDriver(
         driverRequest: DriverRequest
     ): Resource<RideEstimateResponse> {
-        val response = try {
-            service.findDriver(request = driverRequest)
-        } catch (e: HttpException) {
-            return Resource.Error(internalError = InternalError.SERVER_ERROR)
-        } catch (e: IOException) {
-            return Resource.Error(internalError = InternalError.NO_INTERNET_CONNECTION)
-        } catch (e: Exception) {
-            return Resource.Error(internalError = InternalError.UNKNOWN_ERROR)
+        return handleError {
+            val response = service.findDriver(request = driverRequest)
+            getResponse(response = response)
         }
-
-        return getResponse(response = response)
     }
 
     override suspend fun confirmRide(
