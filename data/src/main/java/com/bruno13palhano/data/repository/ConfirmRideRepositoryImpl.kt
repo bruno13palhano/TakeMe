@@ -14,8 +14,8 @@ import com.bruno13palhano.data.model.asInternalRequest
 import com.bruno13palhano.data.model.convert
 import com.bruno13palhano.data.remote.datasource.RemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 internal class ConfirmRideRepositoryImpl @Inject constructor(
@@ -24,27 +24,26 @@ internal class ConfirmRideRepositoryImpl @Inject constructor(
     @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): ConfirmRideRepository {
     override suspend fun confirmRide(confirmRide: RequestConfirmRide): Resource<ConfirmRide> {
+        val driverInfo = driverInfoLocal.getDriverInfo(id = confirmRide.driverId)
 
-        CoroutineScope(dispatcher).run {
-            val driverInfo = driverInfoLocal.getDriverInfo(id = confirmRide.driverId)
-
-            driverInfo?.minKm?.let {
-                if (it > distanceInMetersToKm(confirmRide.distance)) {
-                    return Resource.ServerResponseError(
-                        errorResponse = ErrorResponse(
-                            errorCode = "INVALID_DISTANCE",
-                            errorDescription = "Invalid distance"
-                        )
+        driverInfo?.minKm?.let {
+            if (it > distanceInMetersToKm(confirmRide.distance)) {
+                return Resource.ServerResponseError(
+                    errorResponse = ErrorResponse(
+                        errorCode = "INVALID_DISTANCE",
+                        errorDescription = "Invalid distance"
                     )
-                }
+                )
             }
         }
 
-        val result = remote.confirmRide(
-            confirmRideRequest = confirmRide.asInternalRequest()
-        )
+        return withContext(dispatcher) {
+            val result = remote.confirmRide(
+                confirmRideRequest = confirmRide.asInternalRequest()
+            )
 
-        return result.convert(data = result.data?.asExternalResponse() ?: ConfirmRide.empty)
+            result.convert(data = result.data?.asExternalResponse() ?: ConfirmRide.empty)
+        }
     }
 
     private fun distanceInMetersToKm(distanceInKm: Double): Double {
