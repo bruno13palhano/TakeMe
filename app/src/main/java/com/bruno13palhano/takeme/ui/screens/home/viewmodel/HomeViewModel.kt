@@ -1,6 +1,5 @@
 package com.bruno13palhano.takeme.ui.screens.home.viewmodel
 
-import com.bruno13palhano.data.di.IOScope
 import com.bruno13palhano.data.di.RideEstimateRep
 import com.bruno13palhano.data.repository.RideEstimateRepository
 import com.bruno13palhano.takeme.ui.screens.di.DefaultHomeReducer
@@ -13,17 +12,15 @@ import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeSideEffect
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
 import com.bruno13palhano.takeme.ui.shared.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
     @RideEstimateRep private val repository: RideEstimateRepository,
     @DefaultHomeState private val initialHomeState: HomeState,
-    @DefaultHomeReducer private val homeReducer: HomeReducer,
-    @IOScope private val ioScope: CoroutineScope,
+    @DefaultHomeReducer private val homeReducer: HomeReducer
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent, HomeSideEffect>(
     initialState = initialHomeState,
-    actionProcessor = HomeActionProcessor(repository = repository, scope = ioScope),
+    actionProcessor = HomeActionProcessor(repository = repository),
     reducer = homeReducer
 )
