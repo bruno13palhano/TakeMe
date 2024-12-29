@@ -4,53 +4,45 @@ import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.model.RideEstimate
 import com.bruno13palhano.data.repository.RideEstimateRepository
 import com.bruno13palhano.takeme.ui.shared.base.ActionProcessor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.ProducerScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 
 internal class HomeActionProcessor(
-    private val repository: RideEstimateRepository,
-    private val scope: CoroutineScope
+    private val repository: RideEstimateRepository
 ) : ActionProcessor<HomeAction, HomeState, HomeEvent> {
     override fun process(action: HomeAction, state: HomeState): Flow<HomeEvent> {
-        return channelFlow {
+        return flow {
             when (action) {
-                is HomeAction.OnDismissKeyboard -> send(HomeEvent.DismissKeyboard)
+                is HomeAction.OnDismissKeyboard -> emit(HomeEvent.DismissKeyboard)
 
                 is HomeAction.OnNavigateToDriverPicker -> navigateToDriverPicker(state = state)
             }
-
-            awaitClose()
         }
     }
 
-    private suspend fun ProducerScope<HomeEvent>.navigateToDriverPicker(state: HomeState) {
+    private suspend fun FlowCollector<HomeEvent>.navigateToDriverPicker(state: HomeState) {
         if (state.homeInputFields.isValid()) {
-            send(HomeEvent.Search)
+            emit(HomeEvent.Search)
 
-            scope.launch {
-                val response = repository.searchDriver(
-                    customerId = state.homeInputFields.customerId,
-                    origin = state.homeInputFields.origin,
-                    destination = state.homeInputFields.destination
-                )
+            val response = repository.searchDriver(
+                customerId = state.homeInputFields.customerId,
+                origin = state.homeInputFields.origin,
+                destination = state.homeInputFields.destination
+            )
 
-                processResponse(response = response)
-            }
+            processResponse(response = response)
         } else {
-            send(HomeEvent.InvalidFieldError)
+            emit(HomeEvent.InvalidFieldError)
         }
     }
 
-    private suspend fun ProducerScope<HomeEvent>.processResponse(response: Resource<RideEstimate>) {
+    private suspend fun FlowCollector<HomeEvent>.processResponse(response: Resource<RideEstimate>) {
         when (response) {
             is Resource.Success -> successResponse(response = response)
 
             is Resource.ServerResponseError -> {
-                send(
+                emit(
                     HomeEvent.UpdateErrorResponse(
                         message = response.remoteErrorResponse!!.errorDescription
                     )
@@ -58,21 +50,21 @@ internal class HomeActionProcessor(
             }
 
             is Resource.Error -> {
-                send(
+                emit(
                     HomeEvent.UpdateInternalError(internalError = response.internalError)
                 )
             }
         }
     }
 
-    private suspend fun ProducerScope<HomeEvent>.successResponse(response: Resource<RideEstimate>) {
+    private suspend fun FlowCollector<HomeEvent>.successResponse(response: Resource<RideEstimate>) {
         response.data?.let { rideEstimate ->
             if (rideEstimate.isNotEmpty()) {
                 repository.insertRideEstimate(rideEstimate = rideEstimate)
 
-                send(HomeEvent.NavigateToDriverPicker)
+                emit(HomeEvent.NavigateToDriverPicker)
             } else {
-                send(HomeEvent.NoDriverFound)
+                emit(HomeEvent.NoDriverFound)
             }
         }
     }

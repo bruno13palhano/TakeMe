@@ -6,27 +6,23 @@ import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.repository.ConfirmRideRepository
 import com.bruno13palhano.data.repository.RideEstimateRepository
 import com.bruno13palhano.takeme.ui.shared.base.ActionProcessor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.ProducerScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 
 internal class DriverPickerActionProcessor(
     private val rideEstimateRepository: RideEstimateRepository,
-    private val confirmRideRepository: ConfirmRideRepository,
-    private val scope: CoroutineScope
+    private val confirmRideRepository: ConfirmRideRepository
 ) : ActionProcessor<DriverPickerAction, DriverPickerState, DriverPickerEvent> {
     override fun process(
         action: DriverPickerAction,
         state: DriverPickerState
     ): Flow<DriverPickerEvent> {
-        return channelFlow {
+        return flow {
             when (action) {
                 is DriverPickerAction.OnGetLastRideEstimate -> onGetLastRideEstimate()
 
-                is DriverPickerAction.OnUpdateCustomerParams -> send(
+                is DriverPickerAction.OnUpdateCustomerParams -> emit(
                     DriverPickerEvent.UpdateCustomerParams(
                         customerId = action.customerId,
                         origin = action.origin,
@@ -41,36 +37,32 @@ internal class DriverPickerActionProcessor(
                     value = action.value
                 )
 
-                is DriverPickerAction.OnNavigateToTravelHistory -> send(
+                is DriverPickerAction.OnNavigateToTravelHistory -> emit(
                     DriverPickerEvent.NavigateToTravelHistory
                 )
 
-                is DriverPickerAction.OnNavigateBack -> send(DriverPickerEvent.NavigateBack)
-            }
-
-            awaitClose()
-        }
-    }
-
-    private fun ProducerScope<DriverPickerEvent>.onGetLastRideEstimate() {
-        scope.launch {
-            rideEstimateRepository.getLastRideEstimate().collect {
-                it?.let { rideEstimate ->
-                    send(
-                        DriverPickerEvent.UpdateRideEstimate(rideEstimate = rideEstimate)
-                    )
-                }
+                is DriverPickerAction.OnNavigateBack -> emit(DriverPickerEvent.NavigateBack)
             }
         }
     }
 
-    private suspend fun ProducerScope<DriverPickerEvent>.onChooseDriver(
+    private suspend fun FlowCollector<DriverPickerEvent>.onGetLastRideEstimate() {
+        rideEstimateRepository.getLastRideEstimate().collect {
+            it?.let { rideEstimate ->
+                emit(
+                    DriverPickerEvent.UpdateRideEstimate(rideEstimate = rideEstimate)
+                )
+            }
+        }
+    }
+
+    private suspend fun FlowCollector<DriverPickerEvent>.onChooseDriver(
         state: DriverPickerState,
         driverId: Long,
         driverName: String,
         value: Float
     ) {
-        send(
+        emit(
             DriverPickerEvent.ChooseDriver(
                 driverId = driverId,
                 driverName = driverName,
@@ -78,32 +70,30 @@ internal class DriverPickerActionProcessor(
             )
         )
 
-        scope.launch {
-            val response = confirmRideRepository.confirmRide(
-                confirmRide = RequestConfirmRide(
-                    customerId = state.customerId,
-                    origin = state.origin,
-                    destination = state.destination,
-                    distance = state.rideEstimate.distance,
-                    duration = state.rideEstimate.duration,
-                    driverId = driverId,
-                    driverName = driverName,
-                    value = value
-                )
+        val response = confirmRideRepository.confirmRide(
+            confirmRide = RequestConfirmRide(
+                customerId = state.customerId,
+                origin = state.origin,
+                destination = state.destination,
+                distance = state.rideEstimate.distance,
+                duration = state.rideEstimate.duration,
+                driverId = driverId,
+                driverName = driverName,
+                value = value
             )
+        )
 
-            processChooseDriverResponse(response = response)
-        }
+        processChooseDriverResponse(response = response)
     }
 
-    private suspend fun ProducerScope<DriverPickerEvent>.processChooseDriverResponse(
+    private suspend fun FlowCollector<DriverPickerEvent>.processChooseDriverResponse(
         response: Resource<ConfirmRide>
     ) {
         when (response) {
             is Resource.Success -> successDriverResponse(response = response)
 
             is Resource.ServerResponseError -> {
-                send(
+                emit(
                     DriverPickerEvent.UpdateResponseError(
                         message = response.remoteErrorResponse!!.errorDescription
                     )
@@ -111,7 +101,7 @@ internal class DriverPickerActionProcessor(
             }
 
             is Resource.Error -> {
-                send(
+                emit(
                     DriverPickerEvent.UpdateInternalError(
                         internalError = response.internalError
                     )
@@ -120,14 +110,14 @@ internal class DriverPickerActionProcessor(
         }
     }
 
-    private suspend fun ProducerScope<DriverPickerEvent>.successDriverResponse(
+    private suspend fun FlowCollector<DriverPickerEvent>.successDriverResponse(
         response: Resource<ConfirmRide>
     ) {
         response.data?.let {
             if (it.success) {
-                send(DriverPickerEvent.NavigateToTravelHistory)
+                emit(DriverPickerEvent.NavigateToTravelHistory)
             } else {
-                send(
+                emit(
                     DriverPickerEvent.UpdateResponseError(message = response.internalError?.name)
                 )
             }
