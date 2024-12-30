@@ -1,19 +1,24 @@
 package com.bruno13palhano.takeme.ui.shared.base
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 internal abstract class BasePresenter<Action: ViewAction, Event: ViewEvent, State: ViewState, SideEffect: ViewSideEffect>(
     initialState: State,
     protected val actionProcessor: ActionProcessor<Action, State, Event>,
-    protected val reducer: Reducer<State, Event, SideEffect>,
-    protected val scope: CoroutineScope
+    protected val reducer: Reducer<State, Event, SideEffect>
 ) {
+    private val scope = CloseableCoroutineScope(coroutineContext = SupervisorJob() + Dispatchers.Main.immediate)
+
     private val _state: MutableStateFlow<State> = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()
 
@@ -31,4 +36,11 @@ internal abstract class BasePresenter<Action: ViewAction, Event: ViewEvent, Stat
             }
         }
     }
+}
+
+internal class CloseableCoroutineScope(
+    override val coroutineContext: CoroutineContext
+) : AutoCloseable, CoroutineScope {
+
+    override fun close() = coroutineContext.cancel()
 }
