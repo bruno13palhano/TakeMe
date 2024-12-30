@@ -1,14 +1,18 @@
 package com.bruno13palhano.takeme.ui.screens.di
 
+import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerPresenter
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerReducer
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerState
+import com.bruno13palhano.takeme.ui.screens.home.presenter.HomePresenter
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeReducer
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
+import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryPresenter
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryReducer
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryState
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
@@ -64,4 +68,12 @@ internal object PresenterModule {
     @Provides
     @Singleton
     fun provideTravelHistoryReducer(): TravelHistoryReducer = TravelHistoryReducer()
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+internal interface PresenterEntryPoint {
+    val homePresenter: HomePresenter
+    val driverPickerPresenter: DriverPickerPresenter
+    val travelHistoryPresenter: TravelHistoryPresenter
 }
