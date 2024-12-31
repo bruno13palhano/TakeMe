@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.bruno13palhano.data.model.Route
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -18,6 +19,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun EstimateMap(
@@ -26,6 +28,7 @@ internal fun EstimateMap(
     originTitle: String,
     destinationTitle: String
 ) {
+    val scope = rememberCoroutineScope()
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -50,7 +53,7 @@ internal fun EstimateMap(
         )
     }
 
-    val bounds = LatLngBounds.builder()
+    val bounds = remember { LatLngBounds.builder() }
 
     val markerOrigin = rememberMarkerState()
     val markerDestination = rememberMarkerState()
@@ -72,14 +75,16 @@ internal fun EstimateMap(
         cameraPositionState = cameraPosition,
         uiSettings = uiSettings,
         onMapLoaded = {
-            route.steps.forEach {
-                bounds.include(LatLng(it.startLocation.latitude, it.startLocation.longitude))
-                bounds.include(LatLng(it.endLocation.latitude, it.endLocation.longitude))
-            }
+            scope.launch {
+                route.steps.forEach {
+                    bounds.include(LatLng(it.startLocation.latitude, it.startLocation.longitude))
+                    bounds.include(LatLng(it.endLocation.latitude, it.endLocation.longitude))
+                }
 
-            cameraPosition.move(
-                update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 100)
-            )
+                cameraPosition.move(
+                    update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 100)
+                )
+            }
         }
     ) {
         Marker(state = markerOrigin, title = originTitle)
