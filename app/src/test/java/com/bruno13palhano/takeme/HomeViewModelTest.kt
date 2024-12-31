@@ -12,8 +12,6 @@ import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
 import com.bruno13palhano.takeme.ui.screens.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -54,8 +52,7 @@ internal class HomeViewModelTest {
         sut = HomeViewModel(
             repository = repository,
             initialHomeState = HomeState.initialState,
-            homeReducer = HomeReducer(),
-            ioScope = TestScope(UnconfinedTestDispatcher()),
+            homeReducer = HomeReducer()
         )
 
         sut.state.value.homeInputFields.updateCustomerId(customerId)

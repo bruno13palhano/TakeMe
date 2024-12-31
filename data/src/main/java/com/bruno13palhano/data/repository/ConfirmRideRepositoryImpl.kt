@@ -1,10 +1,9 @@
 package com.bruno13palhano.data.repository
 
 import com.bruno13palhano.data.di.Dispatcher
-import com.bruno13palhano.data.di.DriverInfoLocalDataSource
 import com.bruno13palhano.data.di.TakeMeDispatchers
 import com.bruno13palhano.data.di.TravelInfoRemoteDataSource
-import com.bruno13palhano.data.local.datasource.DriveInfoLocal
+import com.bruno13palhano.data.local.datasource.DriverInfoDao
 import com.bruno13palhano.data.model.ConfirmRide
 import com.bruno13palhano.data.model.ErrorResponse
 import com.bruno13palhano.data.model.RequestConfirmRide
@@ -19,8 +18,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 internal class ConfirmRideRepositoryImpl @Inject constructor(
+    private val driverInfoLocal: DriverInfoDao,
     @TravelInfoRemoteDataSource private val remote: RemoteDataSource,
-    @DriverInfoLocalDataSource private val driverInfoLocal: DriveInfoLocal,
     @Dispatcher(TakeMeDispatchers.IO) private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): ConfirmRideRepository {
     override suspend fun confirmRide(confirmRide: RequestConfirmRide): Resource<ConfirmRide> {

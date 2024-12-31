@@ -15,8 +15,6 @@ import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerS
 import com.bruno13palhano.takeme.ui.screens.driverpicker.viewmodel.DriverPickerViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -49,8 +47,7 @@ internal class DriverPickerViewModelTest {
             rideEstimateRepository = rideEstimateRepository,
             confirmRideRepository = confirmRideRepository,
             defaultDriverPickerState = DriverPickerState.initialState,
-            defaultDriverPickerReducer = DriverPickerReducer(),
-            ioScope = TestScope(UnconfinedTestDispatcher())
+            defaultDriverPickerReducer = DriverPickerReducer()
         )
     }
 

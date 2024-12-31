@@ -14,8 +14,6 @@ import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistor
 import com.bruno13palhano.takeme.ui.screens.travelhistory.viewmodel.TravelHistoryViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -48,8 +46,7 @@ internal class TravelHistoryViewModelTest {
             driverInfoRepository = driverInfoRepository,
             initialTravelHistoryState = TravelHistoryState.initialState,
             travelHistoryReducer = TravelHistoryReducer(),
-            ridesRepository = ridesRepository,
-            ioScope = TestScope(UnconfinedTestDispatcher())
+            ridesRepository = ridesRepository
         )
     }
 

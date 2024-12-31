@@ -5,8 +5,6 @@ import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.Resource
 import com.bruno13palhano.data.model.RideEstimate
 import com.bruno13palhano.data.repository.RideEstimateRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 
 internal class FakeRideEstimateRepository : RideEstimateRepository {
     private val rides = mutableListOf<RideEstimate>()
@@ -37,7 +35,7 @@ internal class FakeRideEstimateRepository : RideEstimateRepository {
         }
     }
 
-    override fun getLastRideEstimate(): Flow<RideEstimate?> {
-        return flowOf(rides.lastOrNull())
+    override suspend fun getLastRideEstimate(): RideEstimate? {
+        return rides.lastOrNull()
     }
 }
