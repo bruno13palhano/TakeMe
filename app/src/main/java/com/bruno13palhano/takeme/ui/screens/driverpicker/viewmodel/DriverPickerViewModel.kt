@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +27,7 @@ internal class DriverPickerViewModel @Inject constructor(
     @ConfirmRideRep private val confirmRideRepository: ConfirmRideRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(DriverPickerState.initialState)
-    val state = _state
+    val state: StateFlow<DriverPickerState> = _state
 
     private val events = MutableSharedFlow<DriverPickerEvent>(extraBufferCapacity = 20)
 

@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +23,7 @@ internal class HomeViewModel @Inject constructor(
     @RideEstimateRep private val repository: RideEstimateRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState.initialState)
-    val state = _state
+    val state: StateFlow<HomeState> = _state
 
     private val events = MutableSharedFlow<HomeEvent>(extraBufferCapacity = 20)
 
