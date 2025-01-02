@@ -68,6 +68,8 @@ internal fun TravelHistoryRoute(
     navigateToHome: () -> Unit,
     viewModel: TravelHistoryViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) { viewModel.handleEvents() }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
 
@@ -83,7 +85,7 @@ internal fun TravelHistoryRoute(
 
     LaunchedEffect(state.start) {
         if (state.start) {
-            viewModel.onAction(action = TravelHistoryAction.OnGetDrivers)
+            viewModel.sendEvent(event = TravelHistoryEvent.GetDrivers)
         }
     }
 
@@ -130,7 +132,7 @@ internal fun TravelHistoryRoute(
     TravelHistoryContent(
         state = state,
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction
+        onEvent = viewModel::sendEvent
     )
 }
 
@@ -140,17 +142,17 @@ private fun TravelHistoryContent(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     state: TravelHistoryState,
-    onAction: (action: TravelHistoryAction) -> Unit
+    onEvent: (event: TravelHistoryEvent) -> Unit
 ) {
     Scaffold(
         modifier = modifier
-            .clickableWithoutRipple { onAction(TravelHistoryAction.OnDismissKeyboard) }
+            .clickableWithoutRipple { onEvent(TravelHistoryEvent.DismissKeyboard) }
             .consumeWindowInsets(WindowInsets.safeDrawing),
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.travel_history)) },
                 navigationIcon = {
-                    IconButton(onClick = { onAction(TravelHistoryAction.OnNavigateToHome) }) {
+                    IconButton(onClick = { onEvent(TravelHistoryEvent.NavigateToHome) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.navigate_to_home)
@@ -183,17 +185,17 @@ private fun TravelHistoryContent(
                         isFieldInvalid = state.isFieldInvalid,
                         onCustomerIdChange = state.travelHistoryInputFields::updateCustomerId,
                         onDriverSelected = { driver ->
-                            onAction(TravelHistoryAction.OnUpdateCurrentDriver(driver = driver))
+                            onEvent(TravelHistoryEvent.UpdateCurrentDriver(driver = driver))
                         },
                         onClick = { expanded ->
-                            onAction(TravelHistoryAction.OnExpandSelector(expandSelector = expanded))
+                            onEvent(TravelHistoryEvent.ExpandSelector(expandSelector = expanded))
                         },
                         onDismiss = { expanded ->
-                            onAction(TravelHistoryAction.OnExpandSelector(expandSelector = expanded))
+                            onEvent(TravelHistoryEvent.ExpandSelector(expandSelector = expanded))
                         },
                         onSearchClick = {
-                            onAction(
-                                TravelHistoryAction.OnGetCustomerRides(
+                            onEvent(
+                                TravelHistoryEvent.GetCustomerRides(
                                     customerId = state.travelHistoryInputFields.customerId,
                                     driverId = state.currentDriver.id
                                 )
@@ -358,7 +360,7 @@ private fun TravelHistoryContentPreview() {
             TravelHistoryContent(
                 state = TravelHistoryState.initialState,
                 snackbarHostState = SnackbarHostState(),
-                onAction = {}
+                onEvent = {}
             )
         }
     }

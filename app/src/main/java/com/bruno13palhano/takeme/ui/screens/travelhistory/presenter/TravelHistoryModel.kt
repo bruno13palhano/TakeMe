@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.DriverInfo
 import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.Ride
-import com.bruno13palhano.takeme.ui.shared.base.ViewAction
 import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
 import com.bruno13palhano.takeme.ui.shared.base.ViewSideEffect
 import com.bruno13palhano.takeme.ui.shared.base.ViewState
@@ -42,11 +41,7 @@ internal data class TravelHistoryState(
 internal sealed interface TravelHistoryEvent : ViewEvent {
     data class ExpandSelector(val expandSelector: Boolean) : TravelHistoryEvent
     data class UpdateCurrentDriver(val driver: DriverInfo) : TravelHistoryEvent
-    data class GetDrivers(val drivers: List<DriverInfo>) : TravelHistoryEvent
-    data class UpdateRides(val rides: List<Ride>) : TravelHistoryEvent
-    data class UpdateResponseError(val message: String?) : TravelHistoryEvent
-    data class UpdateInternalError(val internalError: InternalError?) : TravelHistoryEvent
-    data object InvalidFieldError : TravelHistoryEvent
+    data object GetDrivers : TravelHistoryEvent
     data class GetCustomerRides(val customerId: String, val driverId: Long) : TravelHistoryEvent
     data object DismissKeyboard : TravelHistoryEvent
     data object NavigateToHome : TravelHistoryEvent
@@ -59,14 +54,4 @@ internal sealed interface TravelHistorySideEffect : ViewSideEffect {
     data object InvalidFieldError : TravelHistorySideEffect
     data object DismissKeyboard : TravelHistorySideEffect
     data object NavigateToHome : TravelHistorySideEffect
-}
-
-@Immutable
-internal sealed interface TravelHistoryAction : ViewAction {
-    data class OnExpandSelector(val expandSelector: Boolean) : TravelHistoryAction
-    data class OnUpdateCurrentDriver(val driver: DriverInfo) : TravelHistoryAction
-    data object OnGetDrivers : TravelHistoryAction
-    data class OnGetCustomerRides(val customerId: String, val driverId: Long) : TravelHistoryAction
-    data object OnDismissKeyboard : TravelHistoryAction
-    data object OnNavigateToHome : TravelHistoryAction
 }
