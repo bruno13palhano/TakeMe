@@ -17,17 +17,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
-import com.bruno13palhano.takeme.ui.screens.di.PresenterEntryPoint
-import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerPresenter
-import com.bruno13palhano.takeme.ui.screens.home.presenter.HomePresenter
-import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryPresenter
-import dagger.hilt.EntryPoints
 import kotlinx.coroutines.flow.Flow
 
 private fun View.isKeyboardOpen(): Boolean {
@@ -97,34 +91,4 @@ fun <T> rememberFlowWithLifecycle(
         lifecycle = lifecycle,
         minActiveState = minActiveState
     )
-}
-
-@Composable
-internal fun <T : BasePresenter<*, *, *, *>> rememberPresenter(presenter: Class<T>): T {
-    val applicationContext = LocalContext.current.applicationContext
-
-    if (presenter.isAssignableFrom(HomePresenter::class.java)) {
-        return remember(applicationContext) {
-            EntryPoints.get(
-                applicationContext,
-                PresenterEntryPoint::class.java
-            ).homePresenter
-        } as T
-    } else if(presenter.isAssignableFrom(DriverPickerPresenter::class.java)) {
-        return remember(applicationContext) {
-            EntryPoints.get(
-                applicationContext,
-                PresenterEntryPoint::class.java
-            ).driverPickerPresenter
-        } as T
-    } else if(presenter.isAssignableFrom(TravelHistoryPresenter::class.java)) {
-        return remember(applicationContext) {
-            EntryPoints.get(
-                applicationContext,
-                PresenterEntryPoint::class.java
-            ).travelHistoryPresenter
-        } as T
-    } else {
-        throw IllegalArgumentException("Invalid presenter class")
-    }
 }
