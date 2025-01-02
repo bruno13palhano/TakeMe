@@ -50,6 +50,8 @@ internal fun DriverPickerRoute(
     navigateBack: () -> Unit,
     viewModel: DriverPickerViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) { viewModel.handleEvents() }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
 
@@ -61,8 +63,8 @@ internal fun DriverPickerRoute(
 
     LaunchedEffect(state.start) {
         if (state.start) {
-            viewModel.onAction(
-                action = DriverPickerAction.OnUpdateCustomerParams(
+            viewModel.sendEvent(
+                event = DriverPickerEvent.UpdateCustomerParams(
                     customerId = customerId,
                     origin = origin,
                     destination = destination
@@ -73,7 +75,7 @@ internal fun DriverPickerRoute(
 
     LaunchedEffect(state.start) {
         if (state.start) {
-            viewModel.onAction(action = DriverPickerAction.OnGetLastRideEstimate)
+            viewModel.sendEvent(event = DriverPickerEvent.UpdateRideEstimate)
         }
     }
 
@@ -108,7 +110,7 @@ internal fun DriverPickerRoute(
     DriverPickerContent(
         state = state,
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction
+        onSendEvent = viewModel::sendEvent
     )
 }
 
@@ -118,7 +120,7 @@ private fun DriverPickerContent(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     state: DriverPickerState,
-    onAction: (action: DriverPickerAction) -> Unit
+    onSendEvent: (event: DriverPickerEvent) -> Unit
 ) {
     Scaffold(
         modifier = modifier.consumeWindowInsets(WindowInsets.safeDrawing),
@@ -126,7 +128,7 @@ private fun DriverPickerContent(
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.driver_picker)) },
                 navigationIcon = {
-                    IconButton(onClick = { onAction(DriverPickerAction.OnNavigateBack) }) {
+                    IconButton(onClick = { onSendEvent(DriverPickerEvent.NavigateBack) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.navigate_back)
@@ -173,8 +175,8 @@ private fun DriverPickerContent(
                             rating = driver.review?.rating ?: 0f,
                             value = driver.value ?: 0f,
                             onClick = {
-                                onAction(
-                                    DriverPickerAction.OnChooseDriver(
+                                onSendEvent(
+                                    DriverPickerEvent.ChooseDriver(
                                         driverId = driver.id,
                                         driverName = driver.name ?: "",
                                         value = driver.value ?: 0.0f

@@ -3,7 +3,6 @@ package com.bruno13palhano.takeme.ui.screens.driverpicker.presenter
 import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.RideEstimate
-import com.bruno13palhano.takeme.ui.shared.base.ViewAction
 import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
 import com.bruno13palhano.takeme.ui.shared.base.ViewSideEffect
 import com.bruno13palhano.takeme.ui.shared.base.ViewState
@@ -44,15 +43,12 @@ internal sealed interface DriverPickerEvent : ViewEvent {
         val origin: String,
         val destination: String
     ) : DriverPickerEvent
-    data class UpdateResponseError(val message: String?) : DriverPickerEvent
-    data class UpdateInternalError(val internalError: InternalError?) : DriverPickerEvent
-    data class UpdateRideEstimate(val rideEstimate: RideEstimate) : DriverPickerEvent
+    data object UpdateRideEstimate : DriverPickerEvent
     data class ChooseDriver(
         val driverId: Long,
         val driverName: String,
         val value: Float
     ) : DriverPickerEvent
-    data object NavigateToTravelHistory : DriverPickerEvent
     data object NavigateBack : DriverPickerEvent
 }
 
@@ -62,21 +58,4 @@ internal sealed interface DriverPickerSideEffect : ViewSideEffect {
     data class ShowInternalError(val internalError: InternalError?) : DriverPickerSideEffect
     data object NavigateToTravelHistory : DriverPickerSideEffect
     data object NavigateBack : DriverPickerSideEffect
-}
-
-@Immutable
-internal sealed interface DriverPickerAction : ViewAction {
-    data class OnUpdateCustomerParams(
-        val customerId: String,
-        val origin: String,
-        val destination: String
-    ) : DriverPickerAction
-    data object OnGetLastRideEstimate : DriverPickerAction
-    data class OnChooseDriver(
-        val driverId: Long,
-        val driverName: String,
-        val value: Float
-    ) : DriverPickerAction
-    data object OnNavigateToTravelHistory : DriverPickerAction
-    data object OnNavigateBack : DriverPickerAction
 }
