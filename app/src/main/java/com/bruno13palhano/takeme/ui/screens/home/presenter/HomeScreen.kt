@@ -46,6 +46,8 @@ internal fun HomeRoute(
     navigateToDriverPicker: (customerId: String, origin: String, destination: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) { viewModel.handleEvents() }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
 
@@ -112,7 +114,7 @@ internal fun HomeRoute(
     HomeContent(
         snackbarHostState = snackbarHostState,
         state = state,
-        onAction = viewModel::onAction
+        onSendEvent = viewModel::sendEvent
     )
 }
 
@@ -122,11 +124,11 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     state: HomeState,
-    onAction: (action: HomeAction) -> Unit
+    onSendEvent: (event: HomeEvent) -> Unit
 ) {
     Scaffold(
         modifier = modifier
-            .clickableWithoutRipple { onAction(HomeAction.OnDismissKeyboard) }
+            .clickableWithoutRipple { onSendEvent(HomeEvent.DismissKeyboard) }
             .consumeWindowInsets(WindowInsets.safeDrawing),
         topBar = {
             TopAppBar(
@@ -136,7 +138,7 @@ private fun HomeContent(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             if (!state.isSearch) {
-                FloatingActionButton(onClick = { onAction(HomeAction.OnNavigateToDriverPicker) }) {
+                FloatingActionButton(onClick = { onSendEvent(HomeEvent.NavigateToDriverPicker) }) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = stringResource(id = R.string.search_driver)

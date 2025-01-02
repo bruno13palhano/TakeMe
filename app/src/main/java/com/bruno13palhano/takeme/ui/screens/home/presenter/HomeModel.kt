@@ -24,11 +24,6 @@ internal data class HomeState(
 
 @Immutable
 internal sealed interface HomeEvent : ViewEvent {
-    data object Search : HomeEvent
-    data class UpdateErrorResponse(val message: String?) : HomeEvent
-    data class UpdateInternalError(val internalError: InternalError?) : HomeEvent
-    data object NoDriverFound : HomeEvent
-    data object InvalidFieldError : HomeEvent
     data object DismissKeyboard : HomeEvent
     data object NavigateToDriverPicker : HomeEvent
 }
@@ -45,10 +40,4 @@ internal sealed interface HomeSideEffect : ViewSideEffect {
         val origin: String,
         val destination: String
     ) : HomeSideEffect
-}
-
-@Immutable
-internal sealed interface HomeAction : ViewAction {
-    data object OnDismissKeyboard : HomeAction
-    data object OnNavigateToDriverPicker: HomeAction
 }
