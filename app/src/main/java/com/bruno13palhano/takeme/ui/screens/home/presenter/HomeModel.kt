@@ -2,7 +2,6 @@ package com.bruno13palhano.takeme.ui.screens.home.presenter
 
 import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.InternalError
-import com.bruno13palhano.takeme.ui.shared.base.ViewAction
 import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
 import com.bruno13palhano.takeme.ui.shared.base.ViewSideEffect
 import com.bruno13palhano.takeme.ui.shared.base.ViewState
