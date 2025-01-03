@@ -5,10 +5,8 @@ import com.bruno13palhano.data.model.RideEstimate
 import com.bruno13palhano.data.model.Route
 import com.bruno13palhano.data.repository.RideEstimateRepository
 import com.bruno13palhano.takeme.repository.FakeRideEstimateRepository
-import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeAction
-import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeReducer
+import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeEvent
 import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeSideEffect
-import com.bruno13palhano.takeme.ui.screens.home.presenter.HomeState
 import com.bruno13palhano.takeme.ui.screens.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -49,15 +47,11 @@ internal class HomeViewModelTest {
     @Before
     fun setUp() {
         repository = FakeRideEstimateRepository()
-        sut = HomeViewModel(
-            repository = repository,
-            initialHomeState = HomeState.initialState,
-            homeReducer = HomeReducer()
-        )
+        sut = HomeViewModel(repository = repository)
 
-        sut.state.value.homeInputFields.updateCustomerId(customerId)
-        sut.state.value.homeInputFields.updateOrigin(origin)
-        sut.state.value.homeInputFields.updateDestination(destination)
+        sut.container.state.value.homeInputFields.updateCustomerId(customerId)
+        sut.container.state.value.homeInputFields.updateOrigin(origin)
+        sut.container.state.value.homeInputFields.updateDestination(destination)
     }
 
     @Test
@@ -67,7 +61,7 @@ internal class HomeViewModelTest {
         repository.insertRideEstimate(validRideEstimate)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     HomeSideEffect.ShowResponseError("Unauthorized"),
                     effect
@@ -75,9 +69,9 @@ internal class HomeViewModelTest {
             }
         }
 
-        sut.state.value.homeInputFields.updateCustomerId(triggerFakeServerErrorResponse)
+        sut.container.state.value.homeInputFields.updateCustomerId(triggerFakeServerErrorResponse)
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -90,7 +84,7 @@ internal class HomeViewModelTest {
         repository.insertRideEstimate(validRideEstimate)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     HomeSideEffect.ShowInternalError(InternalError.UNKNOWN_ERROR),
                     effect
@@ -98,9 +92,9 @@ internal class HomeViewModelTest {
             }
         }
 
-        sut.state.value.homeInputFields.updateCustomerId(triggerFakeInternalError)
+        sut.container.state.value.homeInputFields.updateCustomerId(triggerFakeInternalError)
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -111,7 +105,7 @@ internal class HomeViewModelTest {
         repository.insertRideEstimate(RideEstimate.empty)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     HomeSideEffect.ShowNoDriverFound,
                     effect
@@ -119,7 +113,7 @@ internal class HomeViewModelTest {
             }
         }
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -130,7 +124,7 @@ internal class HomeViewModelTest {
         repository.insertRideEstimate(validRideEstimate)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     HomeSideEffect.InvalidFieldError,
                     effect
@@ -138,9 +132,9 @@ internal class HomeViewModelTest {
             }
         }
 
-        sut.state.value.homeInputFields.updateCustomerId("")
+        sut.container.state.value.homeInputFields.updateCustomerId("")
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
 
         collectEffectJob.cancel()
     }
@@ -148,7 +142,7 @@ internal class HomeViewModelTest {
     @Test
     fun checkHomeSideEffect_DismissKeyboard() = runTest {
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     HomeSideEffect.DismissKeyboard,
                     effect
@@ -156,7 +150,7 @@ internal class HomeViewModelTest {
             }
         }
 
-        sut.onAction(HomeAction.OnDismissKeyboard)
+        sut.sendEvent(HomeEvent.DismissKeyboard)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -167,7 +161,7 @@ internal class HomeViewModelTest {
         repository.insertRideEstimate(validRideEstimate)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     HomeSideEffect.NavigateToDriverPicker(customerId, origin, destination),
                     effect
@@ -175,7 +169,7 @@ internal class HomeViewModelTest {
             }
         }
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -185,54 +179,54 @@ internal class HomeViewModelTest {
     fun when_HomeActionOnNavigateToDriverPicker_ifAllFieldsIsNotBlank_then_isSearch_equalsTrue() = runTest {
         repository.insertRideEstimate(validRideEstimate)
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
-        assertEquals(true, sut.state.value.isSearch)
+        assertEquals(true, sut.container.state.value.isSearch)
     }
 
     @Test
     fun when_HomeActionOnNavigateToDriverPicker_ifAllFieldsIsNotBlank_then_isFieldInvalid_equalsFalse() = runTest {
         repository.insertRideEstimate(RideEstimate.empty)
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
 
-        assertEquals(false, sut.state.value.isFieldInvalid)
+        assertEquals(false, sut.container.state.value.isFieldInvalid)
     }
 
     @Test
     fun when_HomeActionOnNavigateToDriverPicker_ifCustomerId_isBlank_then_isFieldInvalid_equalsTrue() = runTest {
         repository.insertRideEstimate(RideEstimate.empty)
 
-        sut.state.value.homeInputFields.updateCustomerId("")
+        sut.container.state.value.homeInputFields.updateCustomerId("")
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
-        assertEquals(true, sut.state.value.isFieldInvalid)
+        assertEquals(true, sut.container.state.value.isFieldInvalid)
     }
 
     @Test
     fun when_HomeActionOnNavigateToDriverPicker_ifOrigin_isBlank_then_isFieldInvalid_equalsTrue() = runTest {
         repository.insertRideEstimate(RideEstimate.empty)
 
-        sut.state.value.homeInputFields.updateOrigin("")
+        sut.container.state.value.homeInputFields.updateOrigin("")
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
-        assertEquals(true, sut.state.value.isFieldInvalid)
+        assertEquals(true, sut.container.state.value.isFieldInvalid)
     }
 
     @Test
     fun when_HomeActionOnNavigateToDriverPicker_ifDestination_isBlank_then_isFieldInvalid_equalsTrue() = runTest {
         repository.insertRideEstimate(RideEstimate.empty)
 
-        sut.state.value.homeInputFields.updateDestination("")
+        sut.container.state.value.homeInputFields.updateDestination("")
 
-        sut.onAction(HomeAction.OnNavigateToDriverPicker)
+        sut.sendEvent(HomeEvent.NavigateToDriverPicker)
         advanceUntilIdle()
 
-        assertEquals(true, sut.state.value.isFieldInvalid)
+        assertEquals(true, sut.container.state.value.isFieldInvalid)
     }
 }

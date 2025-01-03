@@ -3,9 +3,6 @@ package com.bruno13palhano.takeme.ui.screens.driverpicker.presenter
 import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.RideEstimate
-import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
-import com.bruno13palhano.takeme.ui.shared.base.ViewSideEffect
-import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class DriverPickerState(
@@ -19,7 +16,7 @@ internal data class DriverPickerState(
     val driverId: Long,
     val driverName: String,
     val value: Float,
-) : ViewState {
+) {
     companion object {
         val initialState = DriverPickerState(
             start = true,
@@ -37,7 +34,7 @@ internal data class DriverPickerState(
 }
 
 @Immutable
-internal sealed interface DriverPickerEvent : ViewEvent {
+internal sealed interface DriverPickerEvent {
     data class UpdateCustomerParams(
         val customerId: String,
         val origin: String,
@@ -53,7 +50,7 @@ internal sealed interface DriverPickerEvent : ViewEvent {
 }
 
 @Immutable
-internal sealed interface DriverPickerSideEffect : ViewSideEffect {
+internal sealed interface DriverPickerSideEffect {
     data  class ShowResponseError(val message: String?) : DriverPickerSideEffect
     data class ShowInternalError(val internalError: InternalError?) : DriverPickerSideEffect
     data object NavigateToTravelHistory : DriverPickerSideEffect

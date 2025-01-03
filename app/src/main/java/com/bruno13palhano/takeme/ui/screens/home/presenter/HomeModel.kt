@@ -2,16 +2,13 @@ package com.bruno13palhano.takeme.ui.screens.home.presenter
 
 import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.InternalError
-import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
-import com.bruno13palhano.takeme.ui.shared.base.ViewSideEffect
-import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class HomeState(
     val isSearch: Boolean,
     val isFieldInvalid: Boolean,
     val homeInputFields: HomeInputFields
-) : ViewState {
+) {
     companion object {
         val initialState = HomeState(
             isSearch = false,
@@ -22,13 +19,13 @@ internal data class HomeState(
 }
 
 @Immutable
-internal sealed interface HomeEvent : ViewEvent {
+internal sealed interface HomeEvent {
     data object DismissKeyboard : HomeEvent
     data object NavigateToDriverPicker : HomeEvent
 }
 
 @Immutable
-internal sealed interface HomeSideEffect : ViewSideEffect {
+internal sealed interface HomeSideEffect {
     data class ShowResponseError(val message: String?) : HomeSideEffect
     data class ShowInternalError(val internalError: InternalError?) : HomeSideEffect
     data object ShowNoDriverFound : HomeSideEffect

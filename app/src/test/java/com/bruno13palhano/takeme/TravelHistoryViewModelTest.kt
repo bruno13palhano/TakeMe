@@ -7,10 +7,8 @@ import com.bruno13palhano.data.repository.DriverInfoRepository
 import com.bruno13palhano.data.repository.RidesRepository
 import com.bruno13palhano.takeme.repository.FakeDriverInfoRepository
 import com.bruno13palhano.takeme.repository.FakeRidesRepository
-import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryAction
-import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryReducer
+import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryEvent
 import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistorySideEffect
-import com.bruno13palhano.takeme.ui.screens.travelhistory.presenter.TravelHistoryState
 import com.bruno13palhano.takeme.ui.screens.travelhistory.viewmodel.TravelHistoryViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -44,8 +42,6 @@ internal class TravelHistoryViewModelTest {
         ridesRepository = FakeRidesRepository()
         sut = TravelHistoryViewModel(
             driverInfoRepository = driverInfoRepository,
-            initialTravelHistoryState = TravelHistoryState.initialState,
-            travelHistoryReducer = TravelHistoryReducer(),
             ridesRepository = ridesRepository
         )
     }
@@ -54,20 +50,20 @@ internal class TravelHistoryViewModelTest {
     fun when_ExpandedSelectorEvent_shouldUpdateExpandedSelector() = runTest {
         val expected = true
 
-        sut.onAction(TravelHistoryAction.OnExpandSelector(expandSelector = expected))
+        sut.sendEvent(TravelHistoryEvent.ExpandSelector(expandSelector = expected))
         advanceUntilIdle()
 
-        assertEquals(expected, sut.state.value.expandSelector)
+        assertEquals(expected, sut.container.state.value.expandSelector)
     }
 
     @Test
     fun when_UpdateCurrentDriverEvent_shouldUpdateCurrentDriver() = runTest {
         val expected = DriverInfo(1, "Driver 1", 1.0f)
 
-        sut.onAction(TravelHistoryAction.OnUpdateCurrentDriver(driver = expected))
+        sut.sendEvent(TravelHistoryEvent.UpdateCurrentDriver(driver = expected))
         advanceUntilIdle()
 
-        assertEquals(expected, sut.state.value.currentDriver)
+        assertEquals(expected, sut.container.state.value.currentDriver)
     }
 
     @Test
@@ -81,10 +77,10 @@ internal class TravelHistoryViewModelTest {
             driverInfoRepository.insertDriverInfo(driverInfo = driverInfo)
         }
 
-        sut.onAction(TravelHistoryAction.OnGetDrivers)
+        sut.sendEvent(TravelHistoryEvent.GetDrivers)
         advanceUntilIdle()
 
-        assertEquals(expected, sut.state.value.drivers)
+        assertEquals(expected, sut.container.state.value.drivers)
     }
 
     @Test
@@ -99,10 +95,10 @@ internal class TravelHistoryViewModelTest {
             driverInfoRepository.insertDriverInfo(driverInfo = driverInfo)
         }
 
-        sut.onAction(TravelHistoryAction.OnGetDrivers)
+        sut.sendEvent(TravelHistoryEvent.GetDrivers)
         advanceUntilIdle()
 
-        assertEquals(expected, sut.state.value.currentDriver)
+        assertEquals(expected, sut.container.state.value.currentDriver)
     }
 
     @Test
@@ -132,12 +128,12 @@ internal class TravelHistoryViewModelTest {
             )
         )
 
-        sut.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
+        sut.container.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
 
-        sut.onAction(TravelHistoryAction.OnGetCustomerRides(customerId = customerId, driverId = driverId))
+        sut.sendEvent(TravelHistoryEvent.GetCustomerRides(customerId = customerId, driverId = driverId))
         advanceUntilIdle()
 
-        assertEquals(expected, sut.state.value.rides)
+        assertEquals(expected, sut.container.state.value.rides)
     }
 
     @Test
@@ -146,7 +142,7 @@ internal class TravelHistoryViewModelTest {
         val driverId = 1L
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     TravelHistorySideEffect.ShowResponseError(message = "Unauthorized"),
                     effect
@@ -154,9 +150,9 @@ internal class TravelHistoryViewModelTest {
             }
         }
 
-        sut.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
+        sut.container.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
 
-        sut.onAction(TravelHistoryAction.OnGetCustomerRides(customerId = customerId, driverId = driverId))
+        sut.sendEvent(TravelHistoryEvent.GetCustomerRides(customerId = customerId, driverId = driverId))
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -168,7 +164,7 @@ internal class TravelHistoryViewModelTest {
         val driverId = 1L
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     TravelHistorySideEffect.ShowInternalError(
                         internalError = InternalError.UNKNOWN_ERROR
@@ -178,9 +174,9 @@ internal class TravelHistoryViewModelTest {
             }
         }
 
-        sut.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
+        sut.container.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
 
-        sut.onAction(TravelHistoryAction.OnGetCustomerRides(customerId = customerId, driverId = driverId))
+        sut.sendEvent(TravelHistoryEvent.GetCustomerRides(customerId = customerId, driverId = driverId))
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -191,7 +187,7 @@ internal class TravelHistoryViewModelTest {
         val customerId = ""
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     TravelHistorySideEffect.InvalidFieldError,
                     effect
@@ -199,9 +195,9 @@ internal class TravelHistoryViewModelTest {
             }
         }
 
-        sut.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
+        sut.container.state.value.travelHistoryInputFields.updateCustomerId(customerId = customerId)
 
-        sut.onAction(TravelHistoryAction.OnGetCustomerRides(customerId = customerId, driverId = 1L))
+        sut.sendEvent(TravelHistoryEvent.GetCustomerRides(customerId = customerId, driverId = 1L))
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -210,7 +206,7 @@ internal class TravelHistoryViewModelTest {
     @Test
     fun when_DismissKeyboardAction_then_emit_DismissKeyboardSideEffect() = runTest {
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     TravelHistorySideEffect.DismissKeyboard,
                     effect
@@ -218,7 +214,7 @@ internal class TravelHistoryViewModelTest {
             }
         }
 
-        sut.onAction(TravelHistoryAction.OnDismissKeyboard)
+        sut.sendEvent(TravelHistoryEvent.DismissKeyboard)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -227,7 +223,7 @@ internal class TravelHistoryViewModelTest {
     @Test
     fun when_OnNavigateToHome_then_emit_NavigateToHomeSideEffect() = runTest {
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     TravelHistorySideEffect.NavigateToHome,
                     effect
@@ -235,7 +231,7 @@ internal class TravelHistoryViewModelTest {
             }
         }
 
-        sut.onAction(TravelHistoryAction.OnNavigateToHome)
+        sut.sendEvent(TravelHistoryEvent.NavigateToHome)
         advanceUntilIdle()
 
         collectEffectJob.cancel()

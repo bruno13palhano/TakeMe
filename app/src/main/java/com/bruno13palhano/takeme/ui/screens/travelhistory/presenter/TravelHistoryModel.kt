@@ -4,9 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.bruno13palhano.data.model.DriverInfo
 import com.bruno13palhano.data.model.InternalError
 import com.bruno13palhano.data.model.Ride
-import com.bruno13palhano.takeme.ui.shared.base.ViewEvent
-import com.bruno13palhano.takeme.ui.shared.base.ViewSideEffect
-import com.bruno13palhano.takeme.ui.shared.base.ViewState
 
 @Immutable
 internal data class TravelHistoryState(
@@ -20,7 +17,7 @@ internal data class TravelHistoryState(
     val currentDriver: DriverInfo,
     val drivers: List<DriverInfo>,
     val rides: List<Ride>
-) : ViewState {
+) {
     companion object {
         val initialState = TravelHistoryState(
             start = true,
@@ -38,7 +35,7 @@ internal data class TravelHistoryState(
 }
 
 @Immutable
-internal sealed interface TravelHistoryEvent : ViewEvent {
+internal sealed interface TravelHistoryEvent {
     data class ExpandSelector(val expandSelector: Boolean) : TravelHistoryEvent
     data class UpdateCurrentDriver(val driver: DriverInfo) : TravelHistoryEvent
     data object GetDrivers : TravelHistoryEvent
@@ -48,7 +45,7 @@ internal sealed interface TravelHistoryEvent : ViewEvent {
 }
 
 @Immutable
-internal sealed interface TravelHistorySideEffect : ViewSideEffect {
+internal sealed interface TravelHistorySideEffect {
     data class ShowResponseError(val message: String?) : TravelHistorySideEffect
     data class ShowInternalError(val internalError: InternalError?) : TravelHistorySideEffect
     data object InvalidFieldError : TravelHistorySideEffect

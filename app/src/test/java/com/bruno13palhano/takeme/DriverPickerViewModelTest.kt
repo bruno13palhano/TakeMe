@@ -8,10 +8,8 @@ import com.bruno13palhano.data.repository.ConfirmRideRepository
 import com.bruno13palhano.data.repository.RideEstimateRepository
 import com.bruno13palhano.takeme.repository.FakeConfirmRideRepository
 import com.bruno13palhano.takeme.repository.FakeRideEstimateRepository
-import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerAction
-import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerReducer
+import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerEvent
 import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerSideEffect
-import com.bruno13palhano.takeme.ui.screens.driverpicker.presenter.DriverPickerState
 import com.bruno13palhano.takeme.ui.screens.driverpicker.viewmodel.DriverPickerViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -46,8 +44,6 @@ internal class DriverPickerViewModelTest {
         sut = DriverPickerViewModel(
             rideEstimateRepository = rideEstimateRepository,
             confirmRideRepository = confirmRideRepository,
-            defaultDriverPickerState = DriverPickerState.initialState,
-            defaultDriverPickerReducer = DriverPickerReducer()
         )
     }
 
@@ -63,16 +59,16 @@ internal class DriverPickerViewModelTest {
         rideEstimateRepository.insertRideEstimate(rideEstimate = rideEstimate)
         advanceUntilIdle()
 
-        sut.onAction(DriverPickerAction.OnGetLastRideEstimate)
+        sut.sendEvent(DriverPickerEvent.UpdateRideEstimate)
         advanceUntilIdle()
 
-        assertEquals(rideEstimate, sut.state.value.rideEstimate)
+        assertEquals(rideEstimate, sut.container.state.value.rideEstimate)
     }
 
     @Test
     fun when_OnUpdateCustomerParamsAction_the_customerId_origin_and_destination_should_be_updated() = runTest {
-        sut.onAction(
-            action = DriverPickerAction.OnUpdateCustomerParams(
+        sut.sendEvent(
+            event = DriverPickerEvent.UpdateCustomerParams(
                 customerId = "1",
                 origin = "origin",
                 destination = "destination"
@@ -81,9 +77,9 @@ internal class DriverPickerViewModelTest {
 
         advanceUntilIdle()
 
-        assertEquals("1", sut.state.value.customerId)
-        assertEquals("origin", sut.state.value.origin)
-        assertEquals("destination", sut.state.value.destination)
+        assertEquals("1", sut.container.state.value.customerId)
+        assertEquals("origin", sut.container.state.value.origin)
+        assertEquals("destination", sut.container.state.value.destination)
     }
 
     @Test
@@ -92,7 +88,7 @@ internal class DriverPickerViewModelTest {
         val triggerInternalError = DriverInfo(0L, "NoDriverFound", 0f)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     DriverPickerSideEffect.ShowResponseError(
                         message = fakeError,
@@ -102,8 +98,8 @@ internal class DriverPickerViewModelTest {
             }
         }
 
-        sut.onAction(
-            action = DriverPickerAction.OnChooseDriver(
+        sut.sendEvent(
+            event = DriverPickerEvent.ChooseDriver(
                 driverId = triggerInternalError.id,
                 driverName = triggerInternalError.name,
                 value = triggerInternalError.minKm!!
@@ -120,7 +116,7 @@ internal class DriverPickerViewModelTest {
         val triggerInternalError = DriverInfo(1L, "Driver 1", 0.5f)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     DriverPickerSideEffect.ShowResponseError(
                         message = fakeError,
@@ -130,8 +126,8 @@ internal class DriverPickerViewModelTest {
             }
         }
 
-        sut.onAction(
-            action = DriverPickerAction.OnChooseDriver(
+        sut.sendEvent(
+            event = DriverPickerEvent.ChooseDriver(
                 driverId = triggerInternalError.id,
                 driverName = triggerInternalError.name,
                 value = triggerInternalError.minKm!!
@@ -148,7 +144,7 @@ internal class DriverPickerViewModelTest {
         val triggerInternalError = DriverInfo(0L, "InternalError", 0f)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     DriverPickerSideEffect.ShowInternalError(internalError),
                     effect
@@ -156,8 +152,8 @@ internal class DriverPickerViewModelTest {
             }
         }
 
-        sut.onAction(
-            action = DriverPickerAction.OnChooseDriver(
+        sut.sendEvent(
+            event = DriverPickerEvent.ChooseDriver(
                 driverId = triggerInternalError.id,
                 driverName = triggerInternalError.name,
                 value = triggerInternalError.minKm!!
@@ -178,13 +174,13 @@ internal class DriverPickerViewModelTest {
         )
 
         rideEstimateRepository.insertRideEstimate(rideEstimate = rideEstimate)
-        sut.onAction(DriverPickerAction.OnGetLastRideEstimate)
+        sut.sendEvent(DriverPickerEvent.UpdateRideEstimate)
         advanceUntilIdle()
 
         val triggerInternalError = DriverInfo(1L, "Driver 1", 2.5f)
 
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     DriverPickerSideEffect.NavigateToTravelHistory,
                     effect
@@ -192,14 +188,14 @@ internal class DriverPickerViewModelTest {
             }
         }
 
-        sut.onAction(
-            action = DriverPickerAction.OnChooseDriver(
+        sut.sendEvent(
+            event = DriverPickerEvent.ChooseDriver(
                 driverId = triggerInternalError.id,
                 driverName = triggerInternalError.name,
                 value = triggerInternalError.minKm!!
             )
         )
-        sut.onAction(DriverPickerAction.OnNavigateToTravelHistory)
+        sut.sendEvent(DriverPickerEvent.ChooseDriver(1L, "Driver 1", 200.5f))
         advanceUntilIdle()
 
         collectEffectJob.cancel()
@@ -208,7 +204,7 @@ internal class DriverPickerViewModelTest {
     @Test
     fun when_NavigateBackAction_the_sideEffect_should_emit_NavigateBack() = runTest {
         val collectEffectJob = launch {
-            sut.sideEffect.collect { effect ->
+            sut.container.sideEffect.collect { effect ->
                 assertEquals(
                     DriverPickerSideEffect.NavigateBack,
                     effect
@@ -216,7 +212,7 @@ internal class DriverPickerViewModelTest {
             }
         }
 
-        sut.onAction(DriverPickerAction.OnNavigateBack)
+        sut.sendEvent(DriverPickerEvent.NavigateBack)
         advanceUntilIdle()
 
         collectEffectJob.cancel()
