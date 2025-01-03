@@ -46,10 +46,8 @@ internal fun HomeRoute(
     navigateToDriverPicker: (customerId: String, origin: String, destination: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(Unit) { viewModel.handleEvents() }
-
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
+    val state by viewModel.container.state.collectAsStateWithLifecycle()
+    val sideEffect = rememberFlowWithLifecycle(flow = viewModel.container.sideEffect)
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current

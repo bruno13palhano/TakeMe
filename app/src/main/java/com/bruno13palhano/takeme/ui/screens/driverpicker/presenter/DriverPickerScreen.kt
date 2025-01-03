@@ -50,10 +50,8 @@ internal fun DriverPickerRoute(
     navigateBack: () -> Unit,
     viewModel: DriverPickerViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(Unit) { viewModel.handleEvents() }
-
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val sideEffect = rememberFlowWithLifecycle(flow = viewModel.sideEffect)
+    val state by viewModel.container.state.collectAsStateWithLifecycle()
+    val sideEffect = rememberFlowWithLifecycle(flow = viewModel.container.sideEffect)
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
